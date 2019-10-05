@@ -14,21 +14,31 @@ def test_logging(train_logger, valid_logger):
     """
 
     # This is a strongly simplified training loop
+
+    global_iter = 0
     for epoch in range(10):
         torch.manual_seed(epoch)
+        dummy_train_accuracies = []
         for iteration in range(20):
             dummy_train_loss = 0.9**(epoch+iteration/20.)
             dummy_train_accuracy = epoch/10. + torch.randn(10)
+            dummy_train_accuracies.append(dummy_train_accuracy)
 
-            train_logger.add_scalar('train/loss', dummy_train_loss, epoch*20 + iteration)
+            train_logger.add_scalar('loss', dummy_train_loss, global_step=global_iter)
+            global_iter += 1
 
-        train_logger.add_scalar('train/accuracy', dummy_train_accuracy.mean(), epoch)
-
+        
+        dummy_validation_accuracies = []
         torch.manual_seed(epoch)
         for iteration in range(10):
             dummy_validation_accuracy = epoch / 10. + torch.randn(10)
+            dummy_validation_accuracies.append(dummy_validation_accuracy)
 
-        valid_logger.add_scalar('valid/accuracy', dummy_validation_accuracy.mean(), epoch)
+        avg_acc = sum(dummy_train_accuracies) / len(dummy_train_accuracies)
+        train_logger.add_scalar('accuracy', avg_acc.mean(), global_step=global_iter)
+
+        avg_vacc = sum(dummy_validation_accuracies) / len(dummy_validation_accuracies)
+        valid_logger.add_scalar('accuracy', avg_vacc.mean(), global_step=global_iter)
 
 
 if __name__ == "__main__":
