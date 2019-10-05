@@ -51,7 +51,7 @@ def train(args):
 	train_data = load_data('data/train')
 	valid_data = load_data('data/valid')
 
-	num_iter = 0
+	global_step = 0
 	for epoch in range(num_epoch):
 		model.train()
 		loss_vals, acc_vals, vacc_vals = [], [], []
@@ -73,11 +73,11 @@ def train(args):
 			optimizer.step()
 
 			i += 1
-			num_iter += 1
-
 			if i % 20 == 0:
 				print('{}: loss={}'.format(i, loss_val))
-				train_logger.add_scalar('train/loss', loss_val, num_iter)
+				train_logger.add_scalar('loss', loss_val, global_step)
+
+			global_step += 1
 
 		avg_loss = sum(loss_vals) / len(loss_vals)
 		avg_acc = sum(acc_vals) / len(acc_vals)
@@ -88,8 +88,8 @@ def train(args):
 			vacc_vals.append(accuracy(model(img), label).detach().cpu().numpy())
 		avg_vacc = sum(vacc_vals) / len(vacc_vals)
 
-		train_logger.add_scalar('accuracy', avg_acc, epoch)
-		valid_logger.add_scalar('accuracy', avg_vacc, epoch)
+		train_logger.add_scalar('accuracy', avg_acc, global_step)
+		valid_logger.add_scalar('accuracy', avg_vacc, global_step)
 
 		modelname = 'cnn_e{}_{}.th'.format(epoch, round(avg_vacc, 3))
 		save_model_epoch(model, name=modelname)
