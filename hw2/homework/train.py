@@ -17,7 +17,7 @@ def train(args):
 
 	from os import path
 	model = CNNClassifier()
-	print('model')
+
 	train_logger, valid_logger = None, None
 	if args.log_dir is not None:
 		train_logger = tb.SummaryWriter(path.join(args.log_dir, 'train'))
@@ -37,7 +37,7 @@ def train(args):
 	model.to(device)
 	if continue_training:
 		from os import path
-		model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'cc.th')))
+		model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'cnn.th')))
 
 	optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
 	loss = ClassificationLoss()
