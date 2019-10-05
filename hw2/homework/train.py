@@ -68,7 +68,6 @@ def train(args):
 
 			i += 1
 			num_iter += 1
-			
 
 			if i % 20 == 0:
 				print('{}: loss={}'.format(i, loss_val))
@@ -83,8 +82,8 @@ def train(args):
 			vacc_vals.append(accuracy(model(img), label).detach().cpu().numpy())
 		avg_vacc = sum(vacc_vals) / len(vacc_vals)
 
-		train_logger.add_scalar('train/accuracy', avg_acc, epoch)
-		valid_logger.add_scalar('valid/accuracy', avg_vacc, epoch)
+		train_logger.add_scalar('accuracy', avg_acc, epoch)
+		valid_logger.add_scalar('accuracy', avg_vacc, epoch)
 
 		print('epoch %-3d \t loss = %0.3f \t acc = %0.3f \t val acc = %0.3f' % (epoch, avg_loss, avg_acc, avg_vacc))
 	save_model(model)
