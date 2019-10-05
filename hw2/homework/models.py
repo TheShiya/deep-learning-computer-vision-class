@@ -30,7 +30,7 @@ class CNNClassifier(torch.nn.Module):
 			torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 		]
 		
-		layers = [32, 64, 64] # conv output channels
+		layers = [32, 64, 128] # conv output channels
 		
 		kernel_size = 3
 
