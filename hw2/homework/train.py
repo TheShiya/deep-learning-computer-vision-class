@@ -10,6 +10,12 @@ class ClassificationLoss(torch.nn.Module):
 	def forward(self, input, target):
 		return F.cross_entropy(input, target)
 
+def save_model_epoch(model, name):
+	from torch import save
+	from os import path
+	if isinstance(model, CNNClassifier):
+		return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), name))
+	raise ValueError("model type '%s' not supported!"%str(type(model)))
 
 
 def train(args):
@@ -84,6 +90,10 @@ def train(args):
 
 		train_logger.add_scalar('accuracy', avg_acc, epoch)
 		valid_logger.add_scalar('accuracy', avg_vacc, epoch)
+
+		modelname = 'cnn_e{}_{}.th'.format(epoch, round(avg_vacc, 3))
+		save_model_epoch(model, name=modelname)
+
 
 		print('epoch %-3d \t loss = %0.3f \t acc = %0.3f \t val acc = %0.3f' % (epoch, avg_loss, avg_acc, avg_vacc))
 	save_model(model)
