@@ -45,6 +45,7 @@ def train(args):
 	train_data = load_data('data/train')
 	valid_data = load_data('data/valid')
 
+	num_iter = 0
 	for epoch in range(num_epoch):
 		model.train()
 		loss_vals, acc_vals, vacc_vals = [], [], []
@@ -66,7 +67,7 @@ def train(args):
 			optimizer.step()
 
 			i += 1
-			train_logger.add_scalar('train/loss', loss_val, epoch+len(train_data) + i)
+			train_logger.add_scalar('train/loss', loss_val, num_iter)
 			if i % 20 == 0:
 				print('{}: loss={}'.format(i, loss_val))
 
@@ -80,7 +81,7 @@ def train(args):
 		avg_vacc = sum(vacc_vals) / len(vacc_vals)
 
 		train_logger.add_scalar('train/accuracy', avg_acc, epoch)
-		valid_logger.add_scalar('train/valid', avg_vacc, epoch)
+		valid_logger.add_scalar('valid/accuracy', avg_vacc, epoch)
 
 		print('epoch %-3d \t loss = %0.3f \t acc = %0.3f \t val acc = %0.3f' % (epoch, avg_loss, avg_acc, avg_vacc))
 	save_model(model)
