@@ -52,7 +52,7 @@ def save_model(model):
 	from torch import save
 	from os import path
 	if isinstance(model, CNNClassifier):
-		return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'cnn.th'))
+		return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'cc.th'))
 	raise ValueError("model type '%s' not supported!"%str(type(model)))
 
 
