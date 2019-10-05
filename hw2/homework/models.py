@@ -23,14 +23,15 @@ class CNNClassifier(torch.nn.Module):
 		super().__init__()        
 
 		# From lecture
+		c = 32 # current input channels
 		L = [
-			torch.nn.Conv2d(3, 32, kernel_size=7, padding=3, stride=2),
+			torch.nn.Conv2d(3, c, kernel_size=7, padding=3, stride=2),
 			torch.nn.ReLU(),
 			torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 		]
 		
-		layers = [32, 64] # conv output channels
-		c = 32 # current input channels
+		layers = [32, 64, 64] # conv output channels
+		
 		kernel_size = 3
 
 		for l in layers:

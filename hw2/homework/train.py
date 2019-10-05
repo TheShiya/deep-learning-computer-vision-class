@@ -91,6 +91,7 @@ def train(args):
 		train_logger.add_scalar('accuracy', avg_acc, global_step)
 		valid_logger.add_scalar('accuracy', avg_vacc, global_step)
 
+		# Dump intermediate models
 		modelname = 'cnn_e{}_{}.th'.format(epoch, round(avg_vacc, 3))
 		save_model_epoch(model, name=modelname)
 
