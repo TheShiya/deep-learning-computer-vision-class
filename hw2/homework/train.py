@@ -67,9 +67,12 @@ def train(args):
 			optimizer.step()
 
 			i += 1
-			train_logger.add_scalar('train/loss', loss_val, num_iter)
+			num_iter += 1
+			
+
 			if i % 20 == 0:
 				print('{}: loss={}'.format(i, loss_val))
+				train_logger.add_scalar('train/loss', loss_val, num_iter)
 
 		avg_loss = sum(loss_vals) / len(loss_vals)
 		avg_acc = sum(acc_vals) / len(acc_vals)
