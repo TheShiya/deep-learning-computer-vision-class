@@ -3,6 +3,7 @@ from .utils import ConfusionMatrix, load_data, LABEL_NAMES
 import torch
 import torchvision
 import torch.utils.tensorboard as tb
+import pickle
 
 
 def accuracy(outputs, labels):
@@ -28,6 +29,9 @@ def train(args):
     model = CNNClassifier().to(device)
     if args.continue_training:
         model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'cnn.th')))
+        global_step = pickle.load(open('global_step.p', 'rb'))
+    else:
+        global_step = 0
 
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
     loss = torch.nn.CrossEntropyLoss()
@@ -35,7 +39,7 @@ def train(args):
     train_data = load_data('data/train')
     valid_data = load_data('data/valid')
 
-    global_step = 0
+    
     for epoch in range(args.num_epoch):
         model.train()
         acc_vals = []
@@ -49,6 +53,9 @@ def train(args):
             if train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
             acc_vals.append(acc_val.detach().cpu().numpy())
+
+            if global_step % 40:
+                print('{}: loss = '.format(global_step, loss_val))
 
             optimizer.zero_grad()
             loss_val.backward()
@@ -69,9 +76,11 @@ def train(args):
         if valid_logger:
             valid_logger.add_scalar('accuracy', avg_vacc, global_step)
 
-        if valid_logger is None or train_logger is None:
-            print('epoch %-3d \t acc = %0.3f \t val acc = %0.3f' % (epoch, avg_acc, avg_vacc))
+        
+        print('epoch %-3d \t acc = %0.3f \t val acc = %0.3f' % (epoch, avg_acc, avg_vacc))
         save_model(model)
+    
+    pickle.dump(global_step, open('global_step.p', 'wb'))
     save_model(model)
 
 
