@@ -54,8 +54,8 @@ def train(args):
                 train_logger.add_scalar('loss', loss_val, global_step)
             acc_vals.append(acc_val.detach().cpu().numpy())
 
-            if global_step % 40:
-                print('{}: loss = '.format(global_step, loss_val))
+            if global_step % 40 == 0:
+                print('{}: loss = {}'.format(global_step, loss_val))
 
             optimizer.zero_grad()
             loss_val.backward()
