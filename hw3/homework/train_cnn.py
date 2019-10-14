@@ -71,8 +71,9 @@ def train(args):
             loss_val.backward()
             optimizer.step()
             global_step += 1
+        
         avg_acc = sum(acc_vals) / len(acc_vals)
-
+        scheduler.step(np.mean(acc_vals))
         if train_logger:
             train_logger.add_scalar('accuracy', avg_acc, global_step)
 
