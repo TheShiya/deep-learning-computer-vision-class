@@ -7,12 +7,12 @@ from . import dense_transforms
 import torch.utils.tensorboard as tb
 
 
-def augment(image):
+def augment(image, label):
         transform = transforms.Compose([
             transforms.ColorJitter(brightness=0.7, contrast=0.2, saturation=0.2, hue=0.2),
             transforms.RandomHorizontalFlip(p=0.5)
         ])
-        return transform(image)
+        return transform(image, label)
 
 
 def accuracy(outputs, labels):
