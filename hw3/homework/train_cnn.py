@@ -53,7 +53,6 @@ def train(args):
             img, label = img.to(device), label.to(device)
 
             logit    = model(img)
-            print(logit, '<-logit, label->',  label)
             loss_val = loss(logit, label)
             acc_val  = accuracy(logit, label)
 

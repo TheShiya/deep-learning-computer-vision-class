@@ -3,9 +3,6 @@ import torch.nn.functional as F
 
 
 
-
-
-
 class CNNClassifier(torch.nn.Module):
     class Block(torch.nn.Module):
         def __init__(self, n_input, n_output, stride=1):
@@ -29,7 +26,7 @@ class CNNClassifier(torch.nn.Module):
                 identity = self.downsample(x)
             return self.net(x) + identity
         
-    def __init__(self, layers=[32,64,128], n_input_channels=3):
+    def __init__(self, layers=[32,64,128], n_input_channels=3, n_output_channels=6):
         super().__init__()
         L = [torch.nn.Conv2d(n_input_channels, 32, kernel_size=7, padding=3, stride=2, bias=False),
              torch.nn.BatchNorm2d(32),
@@ -41,15 +38,10 @@ class CNNClassifier(torch.nn.Module):
             L.append(self.Block(c, l, stride=2))
             c = l
         self.network = torch.nn.Sequential(*L)
-        self.classifier = torch.nn.Linear(c, 1)
+        self.classifier = torch.nn.Linear(c, n_output_channels)
     
     def forward(self, x):
-        # Compute the features
-        z = self.network(x)
-        # Global average pooling
-        z = z.mean(dim=[2,3])
-        # Classify
-        return self.classifier(z)[:,0]
+        return self.classifier(self.network(x).mean(dim=[2, 3]))
 
 
 # class CNNClassifier(torch.nn.Module):
