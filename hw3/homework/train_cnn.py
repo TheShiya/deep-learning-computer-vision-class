@@ -42,7 +42,7 @@ def train(args):
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
     loss      = ClassificationLoss()
 
-    train_data = load_data('data/train')
+    train_data = load_data('data/train', data_limit=args.data_limit)
     valid_data = load_data('data/valid')
 
     
@@ -53,6 +53,7 @@ def train(args):
             img, label = img.to(device), label.to(device)
 
             logit    = model(img)
+            print(logit, '<-logit, label->',  label)
             loss_val = loss(logit, label)
             acc_val  = accuracy(logit, label)
 
@@ -97,6 +98,6 @@ if __name__ == '__main__':
 
     parser.add_argument('--log_dir')
     # Put custom arguments here
-
+    parser.add_argument('--data_limit', default=99999999)
     args = parser.parse_args()
     train(args)

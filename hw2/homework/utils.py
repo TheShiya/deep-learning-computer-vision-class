@@ -8,7 +8,7 @@ import csv
 LABEL_NAMES = ['background', 'kart', 'pickup', 'nitro', 'bomb', 'projectile']
 
 class SuperTuxDataset(Dataset):
-    def __init__(self, dataset_path):
+    def __init__(self, dataset_path, data_limit=-1):
         """
         Your code here
         Hint: Use the python csv library to parse labels.csv
@@ -17,6 +17,7 @@ class SuperTuxDataset(Dataset):
             self.dataset_path = dataset_path
             csv_reader = csv.reader(labels_file, delimiter=',')
             data = list(csv_reader)[1:] # Exclude headers
+            data = data[:data_limit]
             self.length = len(data)
 
             labels_to_int = dict(zip(LABEL_NAMES, range(len(LABEL_NAMES))))
@@ -40,8 +41,8 @@ class SuperTuxDataset(Dataset):
         return self.to_tensor(image), self.labels[idx]
 
 
-def load_data(dataset_path, num_workers=0, batch_size=128):
-    dataset = SuperTuxDataset(dataset_path)
+def load_data(dataset_path, num_workers=0, batch_size=128, data_limit=9999999):
+    dataset = SuperTuxDataset(dataset_path, data_limit)
     return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size, shuffle=True, drop_last=False)
 
 
