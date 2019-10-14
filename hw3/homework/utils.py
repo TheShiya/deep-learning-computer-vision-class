@@ -45,11 +45,11 @@ class SuperTuxDataset(Dataset):
                     image = Image.open(path.join(dataset_path, fname))
 
                     # Create 2 transformed data
-                    image = transform(image)
+                    image = SuperTuxDataset.transform(image)
                     label_id = LABEL_NAMES.index(label)
                     self.data.append((to_tensor(image), label_id))
 
-                    image = transform(image)
+                    image = SuperTuxDataset.transform(image)
                     label_id = LABEL_NAMES.index(label)
                     self.data.append((to_tensor(image), label_id))
 
