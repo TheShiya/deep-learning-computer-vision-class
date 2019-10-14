@@ -26,7 +26,7 @@ class ClassificationLoss(torch.nn.Module):
 
 def train(args):
     from os import path
-    model = FCN()
+    #model = FCN()
     train_logger, valid_logger = None, None
     if args.log_dir is not None:
         train_logger = tb.SummaryWriter(path.join(args.log_dir, 'train'), flush_secs=1)
@@ -40,7 +40,7 @@ def train(args):
     """
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    
+
     model = FCN().to(device)
     if args.continue_training:
         model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'fcn.th')))
@@ -49,10 +49,7 @@ def train(args):
         global_step = 0
 
 
-    # optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
     optimizer = torch.optim.Adam(model.parameters(), weight_decay=1e-4)
-    # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
-    # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [50,75], gamma=0.1)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
     loss      = ClassificationLoss()
 

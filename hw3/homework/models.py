@@ -127,12 +127,8 @@ class FCN(torch.nn.Module):
             c = l
 
         L.append(torch.nn.Conv2d(c, n_output_channels, kernel_size=1, bias=False))
-        
-        
 
-
-        self.network = torch.nn.Sequential(*L)
-        
+        self.network = torch.nn.Sequential(*L)        
 
         self.classifier = torch.nn.Linear(c, n_output_channels)
     
