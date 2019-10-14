@@ -14,13 +14,13 @@ class CNNClassifier(torch.nn.Module):
               torch.nn.Conv2d(n_input, n_output, kernel_size=3, padding=1, stride=stride, bias=False),
               torch.nn.BatchNorm2d(n_output),
               torch.nn.ReLU(),
-              torch.nn.Conv2d(n_output, n_output, kernel_size=3, padding=1, stride=stride, bias=False),
+              torch.nn.Conv2d(n_output, n_output, kernel_size=3, padding=1, bias=False),
               torch.nn.BatchNorm2d(n_output),
               torch.nn.ReLU()
             )
             self.downsample = None
             if stride != 1 or n_input != n_output:
-                self.downsample = torch.nn.Sequential(torch.nn.Conv2d(n_input, n_output, 1),
+                self.downsample = torch.nn.Sequential(torch.nn.Conv2d(n_input, n_output, 1, stride=stride),
                                                       torch.nn.BatchNorm2d(n_output))
         
         def forward(self, x):
