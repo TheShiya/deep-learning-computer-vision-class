@@ -62,8 +62,6 @@ def train(args):
         model.train()
         acc_vals = []
         for img, label in train_data:
-            img = augment(img)
-            img = to_tensor(img)
 
             img, label = img.to(device), label.to(device)
 

@@ -90,7 +90,7 @@ class DenseSuperTuxDataset(Dataset):
         lbl = Image.open(b + '_seg.png')
         if self.transform is not None:
             im, lbl = self.transform(im, lbl)
-        return self.to_tensor(im), lbl
+        return self.to_tensor(im), self.to_tensor(lbl)
 
 
 def load_data(dataset_path, num_workers=0, batch_size=128, data_limit=99999999, **kwargs):
