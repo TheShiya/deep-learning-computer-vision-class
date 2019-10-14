@@ -40,10 +40,10 @@ def train(args):
         global_step = 0
 
 
-    #optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
-    optimizer = torch.optim.Adam(model.parameters())
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [50,75], gamma=0.1)
+    # optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
+    optimizer = torch.optim.Adam(model.parameters(), weight_decay=1e-4)
+    # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
+    # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [50,75], gamma=0.1)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
     loss      = ClassificationLoss()
 

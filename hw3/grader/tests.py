@@ -20,6 +20,7 @@ class TunedCNNClassifierGrader(Grader):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         cls = self.module.load_model('cnn')
+        print(cls)
         cls.eval()
         cls = cls.to(device)
 

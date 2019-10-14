@@ -88,6 +88,50 @@ class CNNClassifier(torch.nn.Module):
 
 
 class FCN(torch.nn.Module):
+    class Block(torch.nn.Module):
+        def __init__(self, n_input, n_output, stride=1, dropout_p=0.2):
+            super().__init__()
+            self.net = torch.nn.Sequential(
+              torch.nn.Conv2d(n_input, n_output, kernel_size=3, padding=1, stride=stride, bias=False),
+              torch.nn.BatchNorm2d(n_output),
+              torch.nn.ReLU(),
+              # torch.nn.Dropout(p=dropout_p),
+              torch.nn.Conv2d(n_output, n_output, kernel_size=3, padding=1, bias=False),
+              torch.nn.BatchNorm2d(n_output),
+              torch.nn.ReLU(),
+              # torch.nn.Dropout(p=dropout_p),
+            )
+            self.downsample = None
+            if stride != 1 or n_input != n_output:
+                self.downsample = torch.nn.Sequential(torch.nn.Conv2d(n_input, n_output, 1, stride=stride),
+                                                      torch.nn.BatchNorm2d(n_output))
+        
+        def forward(self, x):
+            identity = x
+            if self.downsample is not None:
+                identity = self.downsample(x)
+            return self.net(x) + identity
+        
+    def __init__(self, layers=[32,64,128], n_input_channels=3, n_output_channels=6,
+        dropout_p=0.2):
+        super().__init__()
+        L = [torch.nn.Conv2d(n_input_channels, 32, kernel_size=7, padding=3, stride=2, bias=False),
+             torch.nn.BatchNorm2d(32),
+             torch.nn.ReLU(),
+             torch.nn.Dropout(p=dropout_p),
+             torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+            ]
+        c = 32
+        for l in layers:
+            L.append(self.Block(c, l, stride=2, dropout_p=dropout_p))
+            c = l
+        self.network = torch.nn.Sequential(*L)
+        self.classifier = torch.nn.Linear(c, n_output_channels)
+    
+    def forward(self, x):
+        return self.classifier(self.network(x).mean(dim=[2, 3]))
+
+        
     def __init__(self):
         super().__init__()
         """
