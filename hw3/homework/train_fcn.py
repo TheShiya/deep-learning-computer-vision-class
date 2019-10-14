@@ -6,14 +6,12 @@ from . import dense_transforms
 import torch.utils.tensorboard as tb
 from torchvision import transforms
 
-to_tensor = transforms.ToTensor()
 
 def augment(image, label):
         transform = transforms.Compose([
             transforms.ColorJitter(brightness=0.7, contrast=0.2, saturation=0.2, hue=0.2),
             transforms.RandomHorizontalFlip(p=0.5)
         ])
-        print('aug')
         return transform(image), label
 
 
@@ -40,8 +38,11 @@ def train(args):
           the overall IoU, where label are the batch labels, and logit are the logits of your classifier.
     Hint: If you found a good data augmentation parameters for the CNN, use them here too. Use dense_transforms
     """
+
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    model = FCN().to(device)
     if args.continue_training:
-        model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'cnn.th')))
+        model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'fcn.th')))
         global_step = pickle.load(open('global_step.p', 'rb'))
     else:
         global_step = 0
@@ -62,7 +63,6 @@ def train(args):
         model.train()
         acc_vals = []
         for img, label in train_data:
-
             img, label = img.to(device), label.to(device)
 
             logit    = model(img)
