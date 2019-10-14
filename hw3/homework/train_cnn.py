@@ -1,6 +1,7 @@
 from .models import CNNClassifier, save_model
 from .utils import ConfusionMatrix, load_data, LABEL_NAMES
 import torch
+import torch.nn.functional as F
 import torchvision
 import torch.utils.tensorboard as tb
 import pickle
