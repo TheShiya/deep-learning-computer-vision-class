@@ -23,7 +23,7 @@ Hint: Do not store torch.Tensor's as data here, but use PIL images, torchvision.
 class SuperTuxDataset(Dataset):
     def transform(image):
         transform = transforms.Compose([
-            transforms.ColorJitter(brightness=0.9, contrast=0.5, saturation=0.5, hue=0.5),
+            transforms.ColorJitter(brightness=0.9, contrast=0.2, saturation=0.2, hue=0.2),
             transforms.RandomHorizontalFlip(p=0.5)
         ])
 
