@@ -29,7 +29,7 @@ class SuperTuxDataset(Dataset):
 
         return transform(image)
 
-    def __init__(self, dataset_path):
+    def __init__(self, dataset_path, data_limit):
         """
         Your code here
         Hint: Use your solution (or the master solution) to HW1
@@ -40,7 +40,11 @@ class SuperTuxDataset(Dataset):
         to_tensor = transforms.ToTensor()
         with open(path.join(dataset_path, 'labels.csv'), newline='') as f:
             reader = csv.reader(f)
+            data_count = 0
             for fname, label, _ in reader:
+
+                if data_count == data_limit:
+                    break
                 if label in LABEL_NAMES:
                     image = Image.open(path.join(dataset_path, fname))
 
@@ -88,7 +92,7 @@ class DenseSuperTuxDataset(Dataset):
 
 
 def load_data(dataset_path, num_workers=0, batch_size=128, **kwargs):
-    dataset = SuperTuxDataset(dataset_path, **kwargs)
+    dataset = SuperTuxDataset(dataset_path, data_limit, **kwargs)
     return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size, shuffle=True, drop_last=True)
 
 
