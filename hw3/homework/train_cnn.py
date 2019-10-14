@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import torchvision
 import torch.utils.tensorboard as tb
 import pickle
+import numpy as np
 
 
 def accuracy(outputs, labels):
