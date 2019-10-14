@@ -10,6 +10,10 @@ def accuracy(outputs, labels):
     outputs_idx = outputs.max(1)[1].type_as(labels)
     return outputs_idx.eq(labels).float().mean()
 
+class ClassificationLoss(torch.nn.Module):
+    def forward(self, input, target):
+        return F.cross_entropy(input, target)
+
 
 def train(args):
     from os import path
@@ -33,8 +37,9 @@ def train(args):
     else:
         global_step = 0
 
+
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
-    loss = torch.nn.CrossEntropyLoss()
+    loss      = ClassificationLoss()
 
     train_data = load_data('data/train')
     valid_data = load_data('data/valid')
@@ -46,9 +51,9 @@ def train(args):
         for img, label in train_data:
             img, label = img.to(device), label.to(device)
 
-            logit = model(img)
+            logit    = model(img)
             loss_val = loss(logit, label)
-            acc_val = accuracy(logit, label)
+            acc_val  = accuracy(logit, label)
 
             if train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
