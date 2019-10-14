@@ -47,15 +47,16 @@ class SuperTuxDataset(Dataset):
                     break
                 if label in LABEL_NAMES:
                     image = Image.open(path.join(dataset_path, fname))
-
-                    # Create N transformed data
-                    image = SuperTuxDataset.transform(image)
+                    
+                    # Add original data
                     label_id = LABEL_NAMES.index(label)
                     self.data.append((to_tensor(image), label_id))
-
-                    image = SuperTuxDataset.transform(image)
-                    label_id = LABEL_NAMES.index(label)
-                    self.data.append((to_tensor(image), label_id))
+                    
+                    # Create [num_augment] transformed data
+                    for i in num_augment:
+                        image = SuperTuxDataset.transform(image)
+                        label_id = LABEL_NAMES.index(label)
+                        self.data.append((to_tensor(image), label_id))
 
     def __len__(self):
         """
