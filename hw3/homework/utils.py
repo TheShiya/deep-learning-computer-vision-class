@@ -79,6 +79,7 @@ class DenseSuperTuxDataset(Dataset):
         for im_f in glob(path.join(dataset_path, '*_im.jpg')):
             self.files.append(im_f.replace('_im.jpg', ''))
         self.transform = transform
+        self.to_tensor = transforms.ToTensor()
 
     def __len__(self):
         return len(self.files)
@@ -89,7 +90,7 @@ class DenseSuperTuxDataset(Dataset):
         lbl = Image.open(b + '_seg.png')
         if self.transform is not None:
             im, lbl = self.transform(im, lbl)
-        return to_tensor(im), lbl
+        return self.to_tensor(im), lbl
 
 
 def load_data(dataset_path, num_workers=0, batch_size=128, data_limit=99999999, **kwargs):
