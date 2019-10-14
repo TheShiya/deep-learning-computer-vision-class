@@ -26,11 +26,13 @@ class CNNClassifier(torch.nn.Module):
                 identity = self.downsample(x)
             return self.net(x) + identity
         
-    def __init__(self, layers=[32,64,128], n_input_channels=3, n_output_channels=6):
+    def __init__(self, layers=[32,64,128], n_input_channels=3, n_output_channels=6,
+        dropout_p=0.2):
         super().__init__()
         L = [torch.nn.Conv2d(n_input_channels, 32, kernel_size=7, padding=3, stride=2, bias=False),
              torch.nn.BatchNorm2d(32),
              torch.nn.ReLU(),
+             torch.nn.Dropout(p=dropout_p)
              torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
             ]
         c = 32
