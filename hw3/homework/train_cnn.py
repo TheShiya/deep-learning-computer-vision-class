@@ -19,7 +19,7 @@ class ClassificationLoss(torch.nn.Module):
 
 def train(args):
     from os import path
-    model = CNNClassifier(dropout_p=args.dropout_p, num_augment=args.num_augment)
+    model = CNNClassifier(dropout_p=args.dropout_p)
     train_logger, valid_logger = None, None
     if args.log_dir is not None:
         train_logger = tb.SummaryWriter(path.join(args.log_dir, 'train'), flush_secs=1)
@@ -47,7 +47,7 @@ def train(args):
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
     loss      = ClassificationLoss()
 
-    train_data = load_data('data/train', data_limit=args.data_limit)
+    train_data = load_data('data/train', data_limit=args.data_limit, num_augment=args.num_augment)
     valid_data = load_data('data/valid')
 
     
