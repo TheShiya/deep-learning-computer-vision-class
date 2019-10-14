@@ -14,7 +14,7 @@ class CNNClassifier(torch.nn.Module):
               torch.nn.Dropout(p=dropout_p),
               torch.nn.Conv2d(n_output, n_output, kernel_size=3, padding=1, bias=False),
               torch.nn.BatchNorm2d(n_output),
-              torch.nn.ReLU()
+              torch.nn.ReLU(),
               torch.nn.Dropout(p=dropout_p),
             )
             self.downsample = None
