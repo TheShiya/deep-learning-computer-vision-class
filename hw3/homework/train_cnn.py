@@ -19,7 +19,7 @@ class ClassificationLoss(torch.nn.Module):
 
 def train(args):
     from os import path
-    model = CNNClassifier(dropout_p=args.dropout_p)
+    model = CNNClassifier(dropout_p=args.dropout_p, num_augment=args.num_augment)
     train_logger, valid_logger = None, None
     if args.log_dir is not None:
         train_logger = tb.SummaryWriter(path.join(args.log_dir, 'train'), flush_secs=1)
@@ -105,5 +105,6 @@ if __name__ == '__main__':
     # Put custom arguments here
     parser.add_argument('--data_limit', default=99999999)
     parser.add_argument('--dropout_p', default=.2)
+    parser.add_argument('--num_augment', default=1)
     args = parser.parse_args()
     train(args)

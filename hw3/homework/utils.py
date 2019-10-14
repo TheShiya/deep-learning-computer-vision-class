@@ -29,7 +29,7 @@ class SuperTuxDataset(Dataset):
 
         return transform(image)
 
-    def __init__(self, dataset_path, data_limit=99999999):
+    def __init__(self, dataset_path, data_limit=99999999, num_augment=1):
         """
         Your code here
         Hint: Use your solution (or the master solution) to HW1
@@ -48,7 +48,7 @@ class SuperTuxDataset(Dataset):
                 if label in LABEL_NAMES:
                     image = Image.open(path.join(dataset_path, fname))
 
-                    # Create 2 transformed data
+                    # Create N transformed data
                     image = SuperTuxDataset.transform(image)
                     label_id = LABEL_NAMES.index(label)
                     self.data.append((to_tensor(image), label_id))
