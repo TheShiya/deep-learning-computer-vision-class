@@ -12,7 +12,7 @@ def augment(image, label):
             transforms.ColorJitter(brightness=0.7, contrast=0.2, saturation=0.2, hue=0.2),
             transforms.RandomHorizontalFlip(p=0.5)
         ])
-        return transform(image, label)
+        return transform(image), label
 
 
 def accuracy(outputs, labels):
