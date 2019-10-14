@@ -7,12 +7,21 @@ from . import dense_transforms
 import torch.utils.tensorboard as tb
 
 
-def transform(image):
+def augment(image):
         transform = transforms.Compose([
-            transforms.ColorJitter(brightness=0.9, contrast=0.2, saturation=0.2, hue=0.2),
+            transforms.ColorJitter(brightness=0.7, contrast=0.2, saturation=0.2, hue=0.2),
             transforms.RandomHorizontalFlip(p=0.5)
         ])
         return transform(image)
+
+
+def accuracy(outputs, labels):
+    outputs_idx = outputs.max(1)[1].type_as(labels)
+    return outputs_idx.eq(labels).float().mean()
+
+class ClassificationLoss(torch.nn.Module):
+    def forward(self, input, target):
+        return F.cross_entropy(input, target)
 
 
 def train(args):
@@ -43,7 +52,8 @@ def train(args):
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
     loss      = ClassificationLoss()
 
-    train_data = load_dense_data('data/train', data_limit=args.data_limit, num_augment=args.num_augment)
+    train_data = load_dense_data('data/train', data_limit=args.data_limit,
+                                  num_augment=args.num_augment, transform=augment)
     valid_data = load_dense_data('data/valid')
 
     
