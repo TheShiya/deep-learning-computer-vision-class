@@ -112,8 +112,8 @@ class FCN(torch.nn.Module):
                 identity = self.downsample(x)
             return self.net(x) + identity
         
-    def __init__(self, layers=[32,64,128], n_input_channels=3, n_output_channels=6,
-        dropout_p=0.2):
+    def __init__(self, layers=[32,64], n_input_channels=3, n_output_channels=5, # <- 5 dense labels 
+        dropout_p=0.2, input_width=64):
         super().__init__()
         L = [torch.nn.Conv2d(n_input_channels, 32, kernel_size=7, padding=3, stride=2, bias=False),
              torch.nn.BatchNorm2d(32),
@@ -125,36 +125,54 @@ class FCN(torch.nn.Module):
         for l in layers:
             L.append(self.Block(c, l, stride=2, dropout_p=dropout_p))
             c = l
+
+        L.append(torch.nn.Conv2d(c, n_output_channels, kernel_size=1, bias=False))
+        
+        
+
+
         self.network = torch.nn.Sequential(*L)
+        
+
         self.classifier = torch.nn.Linear(c, n_output_channels)
     
     def forward(self, x):
-        return self.classifier(self.network(x).mean(dim=[2, 3]))
 
-        
-    def __init__(self):
-        super().__init__()
-        """
-        Your code here.
-        Hint: The FCN can be a bit smaller the the CNNClassifier since you need to run it at a higher resolution
-        Hint: Use up-convolutions
-        Hint: Use skip connections
-        Hint: Use residual connections
-        Hint: Always pad by kernel_size / 2, use an odd kernel_size
-        """
-        raise NotImplementedError('FCN.__init__')
+        z = self.network(x)
 
-    def forward(self, x):
-        """
-        Your code here
-        @x: torch.Tensor((B,3,H,W))
-        @return: torch.Tensor((B,6,H,W))
-        Hint: Apply input normalization inside the network, to make sure it is applied in the grader
-        Hint: Input and output resolutions need to match, use output_padding in up-convolutions, crop the output
-              if required (use z = z[:, :, :H, :W], where H and W are the height and width of a corresponding strided
-              convolution
-        """
-        raise NotImplementedError('FCN.forward')
+        U = []
+        for l in range(x.shape[-1]-4):
+            U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=4, padding=1, stride=1, bias=False))
+        self.up = torch.nn.Sequential(*U)
+
+        z = self.up(z)
+        return z
+        #return self.classifier(self.network(x).mean(dim=[2, 3]))
+
+
+    # def __init__(self):
+    #     super().__init__()
+    #     """
+    #     Your code here.
+    #     Hint: The FCN can be a bit smaller the the CNNClassifier since you need to run it at a higher resolution
+    #     Hint: Use up-convolutions
+    #     Hint: Use skip connections
+    #     Hint: Use residual connections
+    #     Hint: Always pad by kernel_size / 2, use an odd kernel_size
+    #     """
+    #     raise NotImplementedError('FCN.__init__')
+
+    # def forward(self, x):
+    #     """
+    #     Your code here
+    #     @x: torch.Tensor((B,3,H,W))
+    #     @return: torch.Tensor((B,6,H,W))
+    #     Hint: Apply input normalization inside the network, to make sure it is applied in the grader
+    #     Hint: Input and output resolutions need to match, use output_padding in up-convolutions, crop the output
+    #           if required (use z = z[:, :, :H, :W], where H and W are the height and width of a corresponding strided
+    #           convolution
+    #     """
+    #     raise NotImplementedError('FCN.forward')
 
 
 model_factory = {

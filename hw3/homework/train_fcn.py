@@ -7,6 +7,14 @@ from . import dense_transforms
 import torch.utils.tensorboard as tb
 
 
+def transform(image):
+        transform = transforms.Compose([
+            transforms.ColorJitter(brightness=0.9, contrast=0.2, saturation=0.2, hue=0.2),
+            transforms.RandomHorizontalFlip(p=0.5)
+        ])
+        return transform(image)
+
+
 def train(args):
     from os import path
     model = FCN()
@@ -21,6 +29,66 @@ def train(args):
           the overall IoU, where label are the batch labels, and logit are the logits of your classifier.
     Hint: If you found a good data augmentation parameters for the CNN, use them here too. Use dense_transforms
     """
+    if args.continue_training:
+        model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'cnn.th')))
+        global_step = pickle.load(open('global_step.p', 'rb'))
+    else:
+        global_step = 0
+
+
+    # optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
+    optimizer = torch.optim.Adam(model.parameters(), weight_decay=1e-4)
+    # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
+    # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [50,75], gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
+    loss      = ClassificationLoss()
+
+    train_data = load_dense_data('data/train', data_limit=args.data_limit, num_augment=args.num_augment)
+    valid_data = load_dense_data('data/valid')
+
+    
+    for epoch in range(args.num_epoch):
+        model.train()
+        acc_vals = []
+        for img, label in train_data:
+            img, label = img.to(device), label.to(device)
+
+            logit    = model(img)
+            loss_val = loss(logit, label)
+            acc_val  = accuracy(logit, label)
+
+            if train_logger is not None:
+                train_logger.add_scalar('loss', loss_val, global_step)
+            acc_vals.append(acc_val.detach().cpu().numpy())
+
+            if global_step % 40 == 0:
+                print('{}: loss = {}'.format(global_step, loss_val))
+
+            optimizer.zero_grad()
+            loss_val.backward()
+            optimizer.step()
+            global_step += 1
+        
+        avg_acc = sum(acc_vals) / len(acc_vals)
+        scheduler.step(np.mean(acc_vals))
+        if train_logger:
+            train_logger.add_scalar('accuracy', avg_acc, global_step)
+
+        model.eval()
+        acc_vals = []
+        for img, label in valid_data:
+            img, label = img.to(device), label.to(device)
+            acc_vals.append(accuracy(model(img), label).detach().cpu().numpy())
+        avg_vacc = sum(acc_vals) / len(acc_vals)
+
+        if valid_logger:
+            valid_logger.add_scalar('accuracy', avg_vacc, global_step)
+
+        
+        print('epoch %-3d \t acc = %0.3f \t val acc = %0.3f' % (epoch, avg_acc, avg_vacc))
+        save_model(model)
+    
+    pickle.dump(global_step, open('global_step.p', 'wb'))
     save_model(model)
 
 
