@@ -29,7 +29,7 @@ class SuperTuxDataset(Dataset):
 
         return transform(image)
 
-    def __init__(self, dataset_path, data_limit):
+    def __init__(self, dataset_path, data_limit=99999999):
         """
         Your code here
         Hint: Use your solution (or the master solution) to HW1
@@ -91,7 +91,7 @@ class DenseSuperTuxDataset(Dataset):
         return im, lbl
 
 
-def load_data(dataset_path, num_workers=0, batch_size=128, **kwargs):
+def load_data(dataset_path, num_workers=0, batch_size=128, data_limit=99999999, **kwargs):
     dataset = SuperTuxDataset(dataset_path, data_limit, **kwargs)
     return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size, shuffle=True, drop_last=True)
 
