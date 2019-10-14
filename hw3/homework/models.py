@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 class CNNClassifier(torch.nn.Module):
     class Block(torch.nn.Module):
-        def __init__(self, n_input, n_output, stride=1):
+        def __init__(self, n_input, n_output, stride=1, dropout_p=0.2):
             super().__init__()
             self.net = torch.nn.Sequential(
               torch.nn.Conv2d(n_input, n_output, kernel_size=3, padding=1, stride=stride, bias=False),
