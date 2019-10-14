@@ -1,10 +1,10 @@
 import torch
 import numpy as np
-
 from .models import FCN, save_model
 from .utils import load_dense_data, DENSE_CLASS_DISTRIBUTION, ConfusionMatrix
 from . import dense_transforms
 import torch.utils.tensorboard as tb
+from torchvision import transforms
 
 
 def augment(image, label):
