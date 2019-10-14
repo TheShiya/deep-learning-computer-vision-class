@@ -21,6 +21,14 @@ Hint: Do not store torch.Tensor's as data here, but use PIL images, torchvision.
       for most transformations.
 """
 class SuperTuxDataset(Dataset):
+    def transform(image):
+        transform = transforms.Compose([
+            transforms.ColorJitter(brightness=0.9),
+            transforms.RandomHorizontalFlip(p=0.5)
+        ])
+
+        return transform(image)
+
     def __init__(self, dataset_path):
         """
         Your code here
@@ -35,6 +43,13 @@ class SuperTuxDataset(Dataset):
             for fname, label, _ in reader:
                 if label in LABEL_NAMES:
                     image = Image.open(path.join(dataset_path, fname))
+
+                    # Create 2 transformed data
+                    image = self.transform(image)
+                    label_id = LABEL_NAMES.index(label)
+                    self.data.append((to_tensor(image), label_id))
+
+                    image = self.transform(image)
                     label_id = LABEL_NAMES.index(label)
                     self.data.append((to_tensor(image), label_id))
 
