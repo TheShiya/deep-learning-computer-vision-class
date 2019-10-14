@@ -53,7 +53,7 @@ class SuperTuxDataset(Dataset):
                     self.data.append((to_tensor(image), label_id))
                     
                     # Create [num_augment] transformed data
-                    for i in num_augment:
+                    for i in range(num_augment):
                         image = SuperTuxDataset.transform(image)
                         label_id = LABEL_NAMES.index(label)
                         self.data.append((to_tensor(image), label_id))
