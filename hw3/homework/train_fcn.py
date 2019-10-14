@@ -52,8 +52,8 @@ def train(args):
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
     loss      = ClassificationLoss()
 
-    train_data = load_dense_data('data/train', transform=augment)
-    valid_data = load_dense_data('data/valid')
+    train_data = load_dense_data('dense_data/train', transform=augment)
+    valid_data = load_dense_data('dense_data/valid')
 
     
     for epoch in range(args.num_epoch):
