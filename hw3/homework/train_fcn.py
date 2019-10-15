@@ -23,7 +23,7 @@ def augment(image, label):
 
 def no_augment(image, label):
     transform = dense_transforms.Compose([
-        dense_transforms.RandomHorizontalFlip(p=0)
+        dense_transforms.RandomHorizontalFlip(flip_prob=0)
     ])
     return transform(image, label)
 
