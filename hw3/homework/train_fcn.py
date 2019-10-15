@@ -10,16 +10,12 @@ import pickle
 
 
 def augment(image, label):
-        # transform = transforms.Compose([
-        #     #dense_transforms.Normalize(0, 1),
-        #     dense_transforms.ColorJitter(),
-        #     #dense_transforms.RandomHorizontalFlip(),
-        # ])
         transform = transforms.Compose([
-            #transforms.ColorJitter(brightness=0.9, contrast=0.2, saturation=0.2, hue=0.2),
-            transforms.RandomHorizontalFlip(p=0)
+            #dense_transforms.Normalize(0, 1),
+            dense_transforms.ColorJitter(),
+            #dense_transforms.RandomHorizontalFlip(),
         ])
-        return transform(image), label
+        return transform(image, label)
 
 def no_augment(image, label):
     transform = dense_transforms.Compose([
@@ -85,7 +81,7 @@ def train(args):
             logit      = model(img)
 
             shape = label.shape
-            label = label.long().view(shape[0], shape[2], shape[3])
+            label = torch.squeeze(label.long())
 
             loss_val = loss(logit, label)
             acc_val  = accuracy(logit, label)
