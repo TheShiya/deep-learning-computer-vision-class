@@ -12,10 +12,12 @@ import pickle
 def augment(image, label):
         transform = transforms.Compose([
             #dense_transforms.Normalize(0, 1),
-            dense_transforms.ColorJitter(),
-            #dense_transforms.RandomHorizontalFlip(),
+            dense_transforms.RandomHorizontalFlip(),
         ])
-        return transform(image, label)
+        image, label = transform(image, label)
+        cj = transforms.ColorJitter(brightness=0.9, contrast=0.2, saturation=0.2, hue=0.2)
+        image = cj(image)
+        return image, label
 
 def no_augment(image, label):
     transform = dense_transforms.Compose([
@@ -36,9 +38,7 @@ class ClassificationLoss(torch.nn.Module):
         self.weight = weight.to(device)
 
     def forward(self, input, target):        
-        return F.cross_entropy(input, target,
-            #weight=self.weight
-            )
+        return F.cross_entropy(input, target, weight=self.weight)
 
 
 def train(args):
@@ -69,7 +69,7 @@ def train(args):
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
     loss      = ClassificationLoss(device)
 
-    train_data = load_dense_data('dense_data/train', transform=no_augment)
+    train_data = load_dense_data('dense_data/train', transform=augment)
     valid_data = load_dense_data('dense_data/valid', transform=no_augment)
 
     

@@ -110,7 +110,7 @@ class FCN(torch.nn.Module):
                 identity = self.downsample(x)
             return self.net(x) + identity
         
-    def __init__(self, layers=[32, 64, 128], n_input_channels=3, n_output_channels=5, # <- 5 dense labels 
+    def __init__(self, layers=[32, 64], n_input_channels=3, n_output_channels=5, # <- 5 dense labels 
         dropout_p=0.2):
         super().__init__()
         L = [torch.nn.Conv2d(n_input_channels, 32, kernel_size=7, padding=3, stride=2, bias=False),
