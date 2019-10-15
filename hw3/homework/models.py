@@ -110,25 +110,33 @@ class FCN(torch.nn.Module):
                 identity = self.downsample(x)
             return self.net(x) + identity
         
-    def __init__(self, layers=[5], n_input_channels=3, n_output_channels=5, # <- 5 dense labels 
+    def __init__(self, layers=[32, 64], n_input_channels=3, n_output_channels=5, # <- 5 dense labels 
         dropout_p=0.2):
         super().__init__()
         L = [torch.nn.Conv2d(n_input_channels, 32, kernel_size=7, padding=3, stride=2, bias=False),
              torch.nn.BatchNorm2d(32),
              torch.nn.ReLU(),
-             torch.nn.Dropout(p=dropout_p),
-             torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+             torch.nn.Dropout2D(p=dropout_p),
             ]
         c = 32
         for l in layers:
             L.append(self.Block(c, l, stride=2, dropout_p=dropout_p))
             c = l
 
-        L.append(torch.nn.Conv2d(c, 5, kernel_size=1, bias=False))
+        L += [
+            torch.nn.Conv2d(c, 128, kernel_size=7, padding=3, stride=2, bias=False),
+            torch.nn.BatchNorm2d(32),
+            torch.nn.ReLU(),
+            torch.nn.Dropout2D(p=dropout_p),
+            ]
+
+        L.append(torch.nn.Conv2d(128, 5, kernel_size=1, bias=False))
 
         self.network = torch.nn.Sequential(*L)
         
         U = []
+
+        U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=7, padding=3, stride=2, bias=False, output_padding=1))
         for l in layers:
             U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=3, padding=1, stride=1, bias=False, output_padding=0))
             U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=3, padding=1, stride=2, bias=False, output_padding=1))
