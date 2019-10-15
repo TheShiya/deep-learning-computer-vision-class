@@ -35,8 +35,10 @@ def accuracy(outputs, labels):
 
 
 class ClassificationLoss(torch.nn.Module):
-    def forward(self, input, target, weight):        
-        return F.cross_entropy(input, target, weight=weight)
+    def __init__(self, weight):
+        self.weight = weight
+    def forward(self, input, target):        
+        return F.cross_entropy(input, target, weight=self.weight)
 
 
 def train(args):
