@@ -16,8 +16,8 @@ def augment(image, label):
         #     #dense_transforms.RandomHorizontalFlip(),
         # ])
         transform = transforms.Compose([
-            transforms.ColorJitter(brightness=0.9, contrast=0.2, saturation=0.2, hue=0.2),
-            #transforms.RandomHorizontalFlip(p=0.5)
+            #transforms.ColorJitter(brightness=0.9, contrast=0.2, saturation=0.2, hue=0.2),
+            transforms.RandomHorizontalFlip(p=0)
         ])
         return transform(image), label
 
@@ -40,7 +40,9 @@ class ClassificationLoss(torch.nn.Module):
         self.weight = weight.to(device)
 
     def forward(self, input, target):        
-        return F.cross_entropy(input, target, weight=self.weight)
+        return F.cross_entropy(input, target,
+            #weight=self.weight
+            )
 
 
 def train(args):
