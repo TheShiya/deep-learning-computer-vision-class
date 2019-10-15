@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional as F
-
+import torchvision
 
 
 class CNNClassifier(torch.nn.Module):
@@ -129,10 +129,8 @@ class FCN(torch.nn.Module):
         L.append(torch.nn.Conv2d(c, 5, kernel_size=1, bias=False))
 
         self.network = torch.nn.Sequential(*L)
-
         
         U = []
-
         for l in layers:
             U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=3, padding=1, stride=1, bias=False, output_padding=0))
             U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=3, padding=1, stride=2, bias=False, output_padding=1))
@@ -147,8 +145,11 @@ class FCN(torch.nn.Module):
 
     
     def forward(self, x):
+        data_shape = x.shape
         z = self.network(x)
         z = self.up(z)
+        # Crop
+        z = z[:data_shape[0], :5, :data_shape[2], :data_shape[3]]
         return z
         #return self.classifier(self.network(x).mean(dim=[2, 3]))
 
