@@ -116,6 +116,7 @@ def train(args):
         
         print('epoch %-3d \t acc = %0.3f \t val acc = %0.3f' % (epoch, avg_acc, avg_vacc))
         save_model(model)
+        pickle.dump(global_step, open('global_step.p', 'wb'))
     
     pickle.dump(global_step, open('global_step.p', 'wb'))
     save_model(model)
