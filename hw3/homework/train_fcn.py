@@ -18,10 +18,10 @@ def augment(image, label):
         return transform(image, label)
 
 def no_augment(image, label):
-    transform = transforms.Compose([
-        transforms.RandomHorizontalFlip(p=0)
+    transform = dense_transforms.Compose([
+        dense_transforms.RandomHorizontalFlip(p=0)
     ])
-    return transform(image), label
+    return transform(image, label)
 
 
 def accuracy(outputs, labels):
