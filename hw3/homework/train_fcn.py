@@ -37,7 +37,7 @@ def accuracy(outputs, labels):
 class ClassificationLoss(torch.nn.Module):
     def __init__(self, device):
         super().__init__()
-        weight = torch.LongTensor([1/x for x in DENSE_CLASS_DISTRIBUTION])
+        weight = torch.FloatTensor([1/x for x in DENSE_CLASS_DISTRIBUTION])
         self.weight = weight.to(device)
 
     def forward(self, input, target):        
