@@ -67,7 +67,7 @@ def train(args):
     else:
         global_step = 0
 
-    optimizer = torch.optim.Adam(model.parameters(), weight_decay=1e-3)
+    optimizer = torch.optim.Adam(model.parameters())#, weight_decay=1e-3)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
     loss      = ClassificationLoss(device)
 
