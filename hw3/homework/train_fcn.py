@@ -13,7 +13,7 @@ def augment(image, label):
         transform = dense_transforms.Compose([
             #dense_transforms.Normalize(0, 1),
             dense_transforms.ColorJitter(),
-            dense_transforms.RandomHorizontalFlip(),
+            #dense_transforms.RandomHorizontalFlip(),
         ])
         return transform(image, label)
 
@@ -30,7 +30,7 @@ def accuracy(outputs, labels):
 
 class ClassificationLoss(torch.nn.Module):
     def forward(self, input, target):
-        return F.cross_entropy(input, target)
+        return F.cross_entropy(input, target, )
 
 
 def train(args):
