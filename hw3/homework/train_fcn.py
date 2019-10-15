@@ -72,11 +72,13 @@ def train(args):
     train_data = load_dense_data('dense_data/train', transform=augment)
     valid_data = load_dense_data('dense_data/valid', transform=no_augment)
 
+    to_tensor = dense_transforms.ToTensor()
     
     for epoch in range(args.num_epoch):
         model.train()
         acc_vals = []
         for img, label in train_data:
+            img, label = to_tensor(img, label)
             img, label = img.to(device), label.to(device)
             logit      = model(img)
 
@@ -106,6 +108,7 @@ def train(args):
         model.eval()
         acc_vals = []
         for img, label in valid_data:
+            img, label = to_tensor(img, label)
             img, label = img.to(device), label.to(device)
             acc_vals.append(accuracy(model(img), label).detach().cpu().numpy())
         avg_vacc = sum(acc_vals) / len(acc_vals)
