@@ -71,8 +71,6 @@ def train(args):
 
     train_data = load_dense_data('dense_data/train', transform=augment)
     valid_data = load_dense_data('dense_data/valid', transform=no_augment)
-
-    to_tensor = dense_transforms.ToTensor()
     
     for epoch in range(args.num_epoch):
         model.train()
@@ -113,7 +111,6 @@ def train(args):
 
         if valid_logger:
             valid_logger.add_scalar('accuracy', avg_vacc, global_step)
-
         
         print('epoch %-3d \t acc = %0.3f \t val acc = %0.3f' % (epoch, avg_acc, avg_vacc))
         save_model(model)

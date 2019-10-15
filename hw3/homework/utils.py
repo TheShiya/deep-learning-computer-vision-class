@@ -94,7 +94,7 @@ class DenseSuperTuxDataset(Dataset):
 
 
 def load_data(dataset_path, num_workers=0, batch_size=128, data_limit=99999999, **kwargs):
-    dataset = SuperTuxDataset(dataset_path, data_limit, **kwargs)
+    dataset = SuperTuxDataset(dataset_path, **kwargs)
     return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size, shuffle=True, drop_last=True)
 
 
