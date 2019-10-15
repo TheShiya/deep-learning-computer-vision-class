@@ -35,8 +35,12 @@ def accuracy(outputs, labels):
 
 
 class ClassificationLoss(torch.nn.Module):
-    def forward(self, input, target):
+    def __init__(device):
+        super().__init__()
         weight = torch.LongTensor([1/x for x in DENSE_CLASS_DISTRIBUTION])
+        self.weight = weight.to(device)
+
+    def forward(self, input, target):        
         return F.cross_entropy(input, target, weight=weight)
 
 
@@ -66,7 +70,7 @@ def train(args):
 
     optimizer = torch.optim.Adam(model.parameters(), weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
-    loss      = ClassificationLoss()
+    loss      = ClassificationLoss(device)
 
     train_data = load_dense_data('dense_data/train', transform=augment)
     valid_data = load_dense_data('dense_data/valid', transform=no_augment)
