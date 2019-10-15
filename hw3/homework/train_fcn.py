@@ -16,14 +16,14 @@ def augment(image, label):
             dense_transforms.ToTensor(),
             dense_transforms.Normalize(np.zeros(3), np.ones(3)),
         ])
-        image, label = transform(image, label)
-        return image, label
+        return transform(image, label)
+
 
 def no_augment(image, label):
     transform = dense_transforms.Compose([
         dense_transforms.ToTensor()
     ])
-    return image, label
+    return transform(image, label)
 
 
 def accuracy(outputs, labels):
