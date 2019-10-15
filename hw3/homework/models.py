@@ -122,7 +122,7 @@ class FCN(torch.nn.Module):
         for l in layers:
             L.append(self.Block(c, l, stride=2, dropout_p=dropout_p))
             c = l
-        L.append(torch.nn.Conv2d(128, 5, kernel_size=1, bias=False))
+        L.append(torch.nn.Conv2d(c, 5, kernel_size=1, bias=False))
         self.network = torch.nn.Sequential(*L)
         
         U = []
