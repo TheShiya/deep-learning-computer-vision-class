@@ -11,7 +11,7 @@ import pickle
 
 def augment(image, label):
         transform = dense_transforms.Compose([
-            dense_transforms.ColorJitter(brightness=0.9, contrast=0.2, saturation=0.2, hue=0.2),
+            dense_transforms.ColorJitter(brightness=0.5, contrast=0.2, saturation=0.2, hue=0.2),
             dense_transforms.RandomHorizontalFlip(),
             dense_transforms.ToTensor(),
             dense_transforms.Normalize(np.zeros(3), np.ones(3)),
