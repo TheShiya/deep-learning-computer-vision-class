@@ -14,7 +14,7 @@ def augment(image, label):
             dense_transforms.ColorJitter(),
             dense_transforms.RandomHorizontalFlip(),
             dense_transforms.ToTensor(),
-            dense_transforms.Normalize(0, 1),
+            dense_transforms.Normalize(np.zeros(3), np.ones(3)),
         ])
         image, label = transform(image, label)
         return to_tensor(image, label)
