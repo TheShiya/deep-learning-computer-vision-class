@@ -41,7 +41,7 @@ class ClassificationLoss(torch.nn.Module):
         self.weight = weight.to(device)
 
     def forward(self, input, target):        
-        return F.cross_entropy(input, target, weight=weight)
+        return F.cross_entropy(input, target, weight=self.weight)
 
 
 def train(args):
