@@ -32,10 +32,11 @@ def accuracy(outputs, labels):
     outputs_idx = outputs.max(1)[1].type_as(labels)
     return outputs_idx.eq(labels).float().mean()
 
+
+
 class ClassificationLoss(torch.nn.Module):
-    def forward(self, input, target):
-        weight = [1/x for x in DENSE_CLASS_DISTRIBUTION]
-        return F.cross_entropy(input, target, weight=torch.LongTensor(weight))
+    def forward(self, input, target, weight):        
+        return F.cross_entropy(input, target, weight=weight)
 
 
 def train(args):
@@ -62,10 +63,11 @@ def train(args):
     else:
         global_step = 0
 
-
+    weight = torch.LongTensor([1/x for x in DENSE_CLASS_DISTRIBUTION])
+    weight = weight.to(device)
     optimizer = torch.optim.Adam(model.parameters(), weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
-    loss      = ClassificationLoss()
+    loss      = ClassificationLoss(weight)
 
     train_data = load_dense_data('dense_data/train', transform=augment)
     valid_data = load_dense_data('dense_data/valid', transform=no_augment)
