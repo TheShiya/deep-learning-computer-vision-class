@@ -71,7 +71,7 @@ def train(args):
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
     loss      = ClassificationLoss(device)
 
-    train_data = load_dense_data('dense_data/train', transform=augment)
+    train_data = load_dense_data('dense_data/train', transform=no_augment)
     valid_data = load_dense_data('dense_data/valid', transform=no_augment)
 
     
