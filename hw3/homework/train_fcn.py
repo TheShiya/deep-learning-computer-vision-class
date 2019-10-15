@@ -11,7 +11,7 @@ import pickle
 
 def augment(image, label):
         transform = dense_transforms.Compose([
-            #dense_transforms.Normalize(0, 1),
+            dense_transforms.Normalize(0, 1),
             dense_transforms.RandomHorizontalFlip(),
         ])
         image, label = transform(image, label)

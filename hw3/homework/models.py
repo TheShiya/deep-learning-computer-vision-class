@@ -133,9 +133,7 @@ class FCN(torch.nn.Module):
         U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=7, padding=3, stride=2, bias=False, output_padding=1))
         
         self.up = torch.nn.Sequential(*U)
-
         self.classifier = torch.nn.Linear(c, n_output_channels)
-
 
     
     def forward(self, x):
