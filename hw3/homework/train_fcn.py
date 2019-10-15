@@ -78,7 +78,6 @@ def train(args):
         model.train()
         acc_vals = []
         for img, label in train_data:
-            img, label = to_tensor(img, label)
             img, label = img.to(device), label.to(device)
             logit      = model(img)
 
@@ -108,7 +107,6 @@ def train(args):
         model.eval()
         acc_vals = []
         for img, label in valid_data:
-            img, label = to_tensor(img, label)
             img, label = img.to(device), label.to(device)
             acc_vals.append(accuracy(model(img), label).detach().cpu().numpy())
         avg_vacc = sum(acc_vals) / len(acc_vals)
