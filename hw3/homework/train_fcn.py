@@ -13,8 +13,8 @@ def augment(image, label):
         transform = dense_transforms.Compose([
             dense_transforms.ColorJitter(),
             dense_transforms.RandomHorizontalFlip(),
+            dense_transforms.ToTensor(),
             dense_transforms.Normalize(0, 1),
-            dense_transforms.ToTensor()
         ])
         image, label = transform(image, label)
         return to_tensor(image, label)
