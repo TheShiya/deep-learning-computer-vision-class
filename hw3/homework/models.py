@@ -126,21 +126,28 @@ class FCN(torch.nn.Module):
             L.append(self.Block(c, l, stride=2, dropout_p=dropout_p))
             c = l
 
-        L.append(torch.nn.Conv2d(c, n_output_channels, kernel_size=1, bias=False))
+        L.append(torch.nn.Conv2d(c, 5, kernel_size=1, bias=False))
 
-        self.network = torch.nn.Sequential(*L)        
+        self.network = torch.nn.Sequential(*L)
 
-        self.classifier = torch.nn.Linear(c, n_output_channels)
-    
-    def forward(self, x):
-
-        z = self.network(x)
-
+        
         U = []
-        for l in range(x.shape[-1]-4):
-            U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=4, padding=1, stride=1, bias=False))
+
+        for l in layers:
+            U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=3, padding=1, stride=1, bias=False, output_padding=0))
+            U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=3, padding=1, stride=2, bias=False, output_padding=1))
+            
+        U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=3, padding=1, stride=2, bias=False, output_padding=1))
+        U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=7, padding=3, stride=2, bias=False, output_padding=1))
+        
         self.up = torch.nn.Sequential(*U)
 
+        self.classifier = torch.nn.Linear(c, n_output_channels)
+
+
+    
+    def forward(self, x):
+        z = self.network(x)
         z = self.up(z)
         return z
         #return self.classifier(self.network(x).mean(dim=[2, 3]))
