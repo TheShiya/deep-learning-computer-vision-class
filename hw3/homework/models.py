@@ -109,6 +109,28 @@ class FCN(torch.nn.Module):
             if self.downsample is not None:
                 identity = self.downsample(x)
             return self.net(x) + identity
+
+
+    class BlockUp(torch.nn.Module):
+        def __init__(self, n_input, n_output, stride=1, dropout_p=0.2):
+            super().__init__()
+            self.net = torch.nn.Sequential(
+              torch.nn.Conv2d(n_input, n_output, kernel_size=3, padding=1, stride=stride, bias=False),
+              
+              torch.nn.Conv2d(n_output, n_output, kernel_size=3, padding=1, bias=False),
+              torch.nn.BatchNorm2d(n_output),
+              torch.nn.ReLU(),
+            )
+            self.downsample = None
+            if stride != 1 or n_input != n_output:
+                self.downsample = torch.nn.Sequential(torch.nn.Conv2d(n_input, n_output, 1, stride=stride),
+                                                      torch.nn.BatchNorm2d(n_output))
+        
+        def forward(self, x):
+            identity = x
+            if self.downsample is not None:
+                identity = self.downsample(x)
+            return self.net(x) + identity
         
     def __init__(self, layers=[32, 64], n_input_channels=3, n_output_channels=5, # <- 5 dense labels 
         dropout_p=0.2):
@@ -128,9 +150,17 @@ class FCN(torch.nn.Module):
         U = []
         for l in layers:
             U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=3, padding=1, stride=1, bias=False, output_padding=0))
-            U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=3, padding=1, stride=2, bias=False, output_padding=1)) 
+            U.append(torch.nn.BatchNorm2d(5))
+            U.append(torch.nn.ReLU())
+            U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=3, padding=1, stride=2, bias=False, output_padding=1))
+            U.append(torch.nn.BatchNorm2d(5))
+            U.append(torch.nn.ReLU()) 
         U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=3, padding=1, stride=2, bias=False, output_padding=1))
+        U.append(torch.nn.BatchNorm2d(5))
+        U.append(torch.nn.ReLU())
         U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=7, padding=3, stride=2, bias=False, output_padding=1))
+        U.append(torch.nn.BatchNorm2d(5))
+        U.append(torch.nn.ReLU())
         
         self.up = torch.nn.Sequential(*U)
         self.classifier = torch.nn.Linear(c, n_output_channels)
