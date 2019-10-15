@@ -11,21 +11,19 @@ import pickle
 
 def augment(image, label):
         transform = dense_transforms.Compose([
-            dense_transforms.Normalize(0, 1),
+            dense_transforms.ColorJitter(),
             dense_transforms.RandomHorizontalFlip(),
+            dense_transforms.Normalize(0, 1),
+            dense_transforms.ToTensor()
         ])
         image, label = transform(image, label)
-        cj = transforms.ColorJitter(brightness=0.9, contrast=0.2, saturation=0.2, hue=0.2)
-        image = cj(image)
-        to_tensor = dense_transforms.ToTensor()
         return to_tensor(image, label)
 
 def no_augment(image, label):
     transform = dense_transforms.Compose([
-        dense_transforms.RandomHorizontalFlip(flip_prob=0)
+        dense_transforms.ToTensor()
     ])
-    to_tensor = dense_transforms.ToTensor()
-    return to_tensor(image, label)
+    return image, label
 
 
 def accuracy(outputs, labels):
