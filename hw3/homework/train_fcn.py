@@ -107,7 +107,6 @@ def train(args):
         acc_vals = []
         for img, label in valid_data:
             img, label = img.to(device), label.to(device)
-
             acc_vals.append(accuracy(model(img), label).detach().cpu().numpy())
         avg_vacc = sum(acc_vals) / len(acc_vals)
 
