@@ -13,7 +13,7 @@ def augment(image, label):
         transform = dense_transforms.Compose([
             #dense_transforms.Normalize(0, 1),
             dense_transforms.ColorJitter(),
-            transforms.RandomHorizontalFlip(),
+            dense_transforms.RandomHorizontalFlip(),
         ])
         return transform(image, label)
 
