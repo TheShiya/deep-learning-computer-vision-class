@@ -66,8 +66,8 @@ def train(args):
             img, label = img.to(device), label.to(device)
 
             logit    = model(img)
-            print(type(logit), logit)
-            print(',,,,,', type(label), label)
+            print(type(logit), logit.dtype)
+            print(',,,,,', type(label), label.dtype)
             loss_val = loss(logit, label)
             acc_val  = accuracy(logit, label)
 
