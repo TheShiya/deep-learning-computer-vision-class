@@ -23,7 +23,7 @@ def accuracy(outputs, labels):
 
 class ClassificationLoss(torch.nn.Module):
     def forward(self, input, target):
-        return F.cross_entropy(torch.LongTensor(input), torch.LongTensor(target))
+        return F.cross_entropy(input, target)
 
 
 def train(args):
@@ -64,10 +64,10 @@ def train(args):
         acc_vals = []
         for img, label in train_data:
             img, label = img.to(device), label.to(device)
-
             logit    = model(img)
-            print(type(logit), logit.dtype)
-            print(',,,,,', type(label), label.dtype)
+
+            print(logit.shape, label.shape)
+
             loss_val = loss(logit, label)
             acc_val  = accuracy(logit, label)
 
