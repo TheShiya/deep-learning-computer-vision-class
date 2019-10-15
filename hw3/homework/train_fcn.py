@@ -16,6 +16,12 @@ def augment(image, label):
         ])
         return transform(image), label
 
+def no_augment(image, label):
+    transform = transforms.Compose([
+        transforms.RandomHorizontalFlip(p=0)
+    ])
+    return transform(image), label
+
 
 def accuracy(outputs, labels):
     outputs_idx = outputs.max(1)[1].type_as(labels)
@@ -56,7 +62,7 @@ def train(args):
     loss      = ClassificationLoss()
 
     train_data = load_dense_data('dense_data/train', transform=augment)
-    valid_data = load_dense_data('dense_data/valid')
+    valid_data = load_dense_data('dense_data/valid', transform=no_augment)
 
     
     for epoch in range(args.num_epoch):
@@ -93,6 +99,7 @@ def train(args):
         acc_vals = []
         for img, label in valid_data:
             img, label = img.to(device), label.to(device)
+
             acc_vals.append(accuracy(model(img), label).detach().cpu().numpy())
         avg_vacc = sum(acc_vals) / len(acc_vals)
 
