@@ -67,7 +67,7 @@ def train(args):
     else:
         global_step = 0
 
-    optimizer = torch.optim.Adam(model.parameters(), weight_decay=1e-4)
+    optimizer = torch.optim.Adam(model.parameters(), weight_decay=1e-3)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
     loss      = ClassificationLoss(device)
 
@@ -94,7 +94,6 @@ def train(args):
 
             if global_step % 40 == 0:
                 print('{}: loss = {}'.format(global_step, loss_val))
-                break
 
             optimizer.zero_grad()
             loss_val.backward()
