@@ -17,7 +17,8 @@ def augment(image, label):
         image, label = transform(image, label)
         cj = transforms.ColorJitter(brightness=0.9, contrast=0.2, saturation=0.2, hue=0.2)
         image = cj(image)
-        return image, label
+        to_tensor = dense_transforms.ToTensor(),
+        return to_tensor(image, label)
 
 def no_augment(image, label):
     transform = dense_transforms.Compose([
