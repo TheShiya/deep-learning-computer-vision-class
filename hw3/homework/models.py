@@ -163,7 +163,6 @@ class FCN(torch.nn.Module):
         U.append(torch.nn.ReLU())
 
         self.up = torch.nn.Sequential(*U)
-        self.classifier = torch.nn.Linear(c, n_output_channels)
 
     
     def forward(self, x):
@@ -173,7 +172,6 @@ class FCN(torch.nn.Module):
         # Crop
         z = z[:data_shape[0], :5, :data_shape[2], :data_shape[3]]
         return z
-        #return self.classifier(self.network(x).mean(dim=[2, 3]))
 
 
     # def __init__(self):
