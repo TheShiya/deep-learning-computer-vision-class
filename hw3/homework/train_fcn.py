@@ -33,7 +33,6 @@ def accuracy(outputs, labels):
     return outputs_idx.eq(labels).float().mean()
 
 
-
 class ClassificationLoss(torch.nn.Module):
     def __init__(self, device):
         super().__init__()
@@ -95,6 +94,7 @@ def train(args):
 
             if global_step % 40 == 0:
                 print('{}: loss = {}'.format(global_step, loss_val))
+                break
 
             optimizer.zero_grad()
             loss_val.backward()
