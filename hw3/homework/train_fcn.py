@@ -10,12 +10,12 @@ import pickle
 
 
 def augment(image, label):
-        transform = transforms.Compose([
+        transform = dense_transforms.Compose([
             #dense_transforms.Normalize(0, 1),
             dense_transforms.ColorJitter(),
             transforms.RandomHorizontalFlip(),
         ])
-        return transform(image), label
+        return transform(image, label)
 
 def no_augment(image, label):
     transform = transforms.Compose([
