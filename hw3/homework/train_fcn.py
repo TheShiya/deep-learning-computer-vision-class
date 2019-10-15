@@ -24,7 +24,8 @@ def no_augment(image, label):
     transform = dense_transforms.Compose([
         dense_transforms.RandomHorizontalFlip(flip_prob=0)
     ])
-    return transform(image, label)
+    to_tensor = dense_transforms.ToTensor()
+    return to_tensor(image, label)
 
 
 def accuracy(outputs, labels):
