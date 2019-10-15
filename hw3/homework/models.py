@@ -125,7 +125,7 @@ class FCN(torch.nn.Module):
 
         L += [
             torch.nn.Conv2d(c, 128, kernel_size=7, padding=3, stride=2, bias=False),
-            torch.nn.BatchNorm2d(32),
+            torch.nn.BatchNorm2d(128),
             torch.nn.ReLU(),
             torch.nn.Dropout(p=dropout_p),
             ]
