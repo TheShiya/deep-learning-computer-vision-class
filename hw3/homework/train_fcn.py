@@ -17,7 +17,7 @@ def augment(image, label):
             dense_transforms.Normalize(np.zeros(3), np.ones(3)),
         ])
         image, label = transform(image, label)
-        return to_tensor(image, label)
+        return image, label
 
 def no_augment(image, label):
     transform = dense_transforms.Compose([
