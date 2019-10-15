@@ -132,7 +132,7 @@ class FCN(torch.nn.Module):
                 identity = self.downsample(x)
             return self.net(x) + identity
         
-    def __init__(self, layers=[32, 64], n_input_channels=3, n_output_channels=5, # <- 5 dense labels 
+    def __init__(self, layers=[32, 64, 128], n_input_channels=3, n_output_channels=5, # <- 5 dense labels 
         dropout_p=0.2):
         super().__init__()
         L = [torch.nn.Conv2d(n_input_channels, 32, kernel_size=7, padding=3, stride=2, bias=False),
@@ -161,7 +161,7 @@ class FCN(torch.nn.Module):
         U.append(torch.nn.ConvTranspose2d(5, 5, kernel_size=7, padding=3, stride=2, bias=False, output_padding=1))
         U.append(torch.nn.BatchNorm2d(5))
         U.append(torch.nn.ReLU())
-        
+
         self.up = torch.nn.Sequential(*U)
         self.classifier = torch.nn.Linear(c, n_output_channels)
 
