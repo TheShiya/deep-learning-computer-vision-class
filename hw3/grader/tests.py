@@ -72,7 +72,7 @@ class TrainedFCNGrader(Grader):
 
         self.c = self.module.ConfusionMatrix()
         print('a')
-        for img, label in load_dense_data(self.module.utils.DenseSuperTuxDataset('dense_data/valid')):
+        for img, label in load_data(self.module.utils.DenseSuperTuxDataset('dense_data/valid')):
             print('b')
             self.c.add(cls(img.to(device)).argmax(1), label.to(device))
 
