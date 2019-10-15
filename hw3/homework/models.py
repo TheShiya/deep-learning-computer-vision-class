@@ -116,7 +116,7 @@ class FCN(torch.nn.Module):
         L = [torch.nn.Conv2d(n_input_channels, 32, kernel_size=7, padding=3, stride=2, bias=False),
              torch.nn.BatchNorm2d(32),
              torch.nn.ReLU(),
-             torch.nn.Dropout2D(p=dropout_p),
+             torch.nn.Dropout(p=dropout_p),
             ]
         c = 32
         for l in layers:
@@ -127,7 +127,7 @@ class FCN(torch.nn.Module):
             torch.nn.Conv2d(c, 128, kernel_size=7, padding=3, stride=2, bias=False),
             torch.nn.BatchNorm2d(32),
             torch.nn.ReLU(),
-            torch.nn.Dropout2D(p=dropout_p),
+            torch.nn.Dropout(p=dropout_p),
             ]
 
         L.append(torch.nn.Conv2d(128, 5, kernel_size=1, bias=False))
