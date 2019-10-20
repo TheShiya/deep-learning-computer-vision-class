@@ -138,7 +138,7 @@ def train(args):
         for img, label, square in valid_data:
             img, label = img.to(device), label.to(device).long()
             logit = model(img)
-            val_conf.add(logit.argmax(1), label)
+            val_conf.add(logit.argmax(1), label.argmax(1))
 
         if valid_logger is not None:
             valid_logger.add_image('image', img[0], global_step)
