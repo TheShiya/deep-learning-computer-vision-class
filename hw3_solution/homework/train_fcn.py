@@ -88,7 +88,7 @@ def train(args):
             valid_logger.add_scalar('average_accuracy', val_conf.average_accuracy, global_step)
             valid_logger.add_scalar('iou', val_conf.iou, global_step)
 
-        if valid_logger is None or train_logger is None:
+        if True or valid_logger is None or train_logger is None:
             print('epoch %-3d \t acc = %0.3f \t val acc = %0.3f \t iou = %0.3f \t val iou = %0.3f' %
                   (epoch, conf.global_accuracy, val_conf.global_accuracy, conf.iou, val_conf.iou))
         save_model(model)
