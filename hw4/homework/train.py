@@ -77,7 +77,7 @@ def train(args):
         global_step = 0
     # optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=1e-3)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
-    w = torch.as_tensor(DENSE_CLASS_DISTRIBUTION)**(-args.gamma)
+    w = torch.as_tensor(DENSE_CLASS_DISTRIBUTION)**(-args.gamma).long().to(device)
     loss = torch.nn.BCEWithLogitsLoss(weight=w / w.mean()).to(device)
 
     import inspect
@@ -105,7 +105,7 @@ def train(args):
 
             print(logit.shape)
             print(label.shape)
-            
+
             loss_val = loss(logit, label)
             if train_logger is not None and global_step % 100 == 0:
                 train_logger.add_image('image', img[0], global_step)
