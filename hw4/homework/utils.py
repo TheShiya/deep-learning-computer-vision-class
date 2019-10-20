@@ -84,6 +84,7 @@ if __name__ == '__main__':
 
     show()
 
+
 class ConfusionMatrix(object):
     def _make(self, preds, labels):
         label_range = torch.arange(self.size, device=preds.device)[None, :]
@@ -131,25 +132,3 @@ class ConfusionMatrix(object):
     @property
     def per_class(self):
         return self.matrix / (self.matrix.sum(1, keepdims=True) + 1e-5)
-
-
-if __name__ == '__main__':
-    dataset = DenseSuperTuxDataset('dense_data/train', transform=dense_transforms.Compose(
-        [dense_transforms.RandomHorizontalFlip(), dense_transforms.ToTensor()]))
-    from pylab import show, imshow, subplot, axis
-
-    for i in range(15):
-        im, lbl = dataset[i]
-        subplot(5, 6, 2 * i + 1)
-        imshow(F.to_pil_image(im))
-        axis('off')
-        subplot(5, 6, 2 * i + 2)
-        imshow(dense_transforms.label_to_pil_image(lbl))
-        axis('off')
-    show()
-    import numpy as np
-
-    c = np.zeros(5)
-    for im, lbl in dataset:
-        c += np.bincount(lbl.view(-1), minlength=len(DENSE_LABEL_NAMES))
-    print(100 * c / np.sum(c))
