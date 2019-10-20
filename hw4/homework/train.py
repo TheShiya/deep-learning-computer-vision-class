@@ -8,7 +8,7 @@ import torch.utils.tensorboard as tb
 
 def _one_hot(x, n):
     return (x.view(-1, 1) == torch.arange(n, dtype=x.dtype, device=x.device)).int()
-    
+
 class ConfusionMatrix(object):
     def _make(self, preds, labels):
         label_range = torch.arange(self.size, device=preds.device)[None, :]
@@ -125,7 +125,7 @@ def train(args):
             if global_step % 20 == 0:
                 print('{}: loss: {}'.format(global_step, loss_val))
 
-            conf.add(logit.argmax(1), label)
+            conf.add(logit.argmax(1), label.argmax(1))
             optimizer.zero_grad()
             loss_val.backward()
             optimizer.step()
