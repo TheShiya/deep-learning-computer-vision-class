@@ -93,9 +93,14 @@ def train(args):
         dense_transforms.ToTensor(),
         dense_transforms.ToHeatmap(),
         ])
+
+    transform_valid = dense_transforms.Compose([
+        dense_transforms.ToTensor(),
+        dense_transforms.ToHeatmap(),
+        ])
     
     train_data = load_detection_data('dense_data/train', num_workers=4, transform=transform)
-    valid_data = load_detection_data('dense_data/valid', num_workers=4)
+    valid_data = load_detection_data('dense_data/valid', num_workers=4, transform=transform_valid)
 
     model = model.to(device)
     for epoch in range(args.num_epoch):
