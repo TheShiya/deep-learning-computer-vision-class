@@ -58,7 +58,7 @@ DENSE_CLASS_DISTRIBUTION = [0.52683655, 0.02929112, 0.4352989, 0.0044619, 0.0041
 
 def train(args):
     from os import path
-    model = Detector().to(device)
+    model = Detector()
     train_logger, valid_logger = None, None
     if args.log_dir is not None:
         train_logger = tb.SummaryWriter(path.join(args.log_dir, 'train'), flush_secs=1)
@@ -93,6 +93,7 @@ def train(args):
     train_data = load_detection_data('dense_data/train', num_workers=4, transform=transform)
     valid_data = load_detection_data('dense_data/valid', num_workers=4)
 
+    model = model.to(device)
     for epoch in range(args.num_epoch):
         model.train()
         conf = ConfusionMatrix()
