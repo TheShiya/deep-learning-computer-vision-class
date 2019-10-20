@@ -65,7 +65,7 @@ class Detector(torch.nn.Module):
 			c = l
 			if self.use_skip:
 				c += skip_layer_size[i]
-		self.classifier = torch.nn.Conv2d(c, n_output_cshannels, 1)
+		self.classifier = torch.nn.Conv2d(c, n_output_channels, 1)
 
 	def forward(self, x):
 		z = (x - self.input_mean[None, :, None, None].to(x.device)) / self.input_std[None, :, None, None].to(x.device)
