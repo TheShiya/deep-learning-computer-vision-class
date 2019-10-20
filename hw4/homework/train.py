@@ -107,7 +107,7 @@ def train(args):
             print(logit.shape)
             print(label.shape)
 
-            loss_val = loss(logit, label)
+            loss_val = loss(logit.view(-1,-1,-1,3), label.view(-1,-1,-1,3))
             if train_logger is not None and global_step % 100 == 0:
                 train_logger.add_image('image', img[0], global_step)
                 train_logger.add_image('label', np.array(dense_transforms.label_to_pil_image(label[0].cpu()).
