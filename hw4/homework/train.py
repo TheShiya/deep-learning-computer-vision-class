@@ -36,7 +36,13 @@ def train(args):
     import inspect
     #transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
 
-    transform = dense_transforms.Compose([dense_transforms.ToTensor(), dense_transforms.ToHeatmap()])
+    transform = dense_transforms.Compose([
+        dense_transforms.ToTensor(),
+        dense_transforms.ToHeatmap(),
+        dense_transforms.ColorJitter(0.9, 0.9, 0.9, 0.1),
+        dense_transforms.RandomHorizontalFlip(),
+        dense_transforms.ToTensor()
+        ])
     
     train_data = load_detection_data('dense_data/train', num_workers=4, transform=transform)
     valid_data = load_detection_data('dense_data/valid', num_workers=4)
@@ -44,7 +50,9 @@ def train(args):
     global_step = 0
     for epoch in range(args.num_epoch):
         model.train()
+        i = 0
         for img, label in train_data:
+            i += 1
             img, label = img.to(device), label.to(device).long()
 
             logit = model(img)
@@ -59,6 +67,9 @@ def train(args):
 
             if train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
+
+            if i % 20 == 0:
+                print('{}: loss: {}'.format(i, loss_val))
 
             optimizer.zero_grad()
             loss_val.backward()
@@ -90,7 +101,8 @@ def train(args):
             valid_logger.add_scalar('average_accuracy', val_conf.average_accuracy, global_step)
             valid_logger.add_scalar('iou', val_conf.iou, global_step)
 
-        if valid_logger is None or train_logger is None:
+
+        if True or valid_logger is None or train_logger is None:
             print('epoch %-3d \t acc = %0.3f \t val acc = %0.3f \t iou = %0.3f \t val iou = %0.3f' %
                   (epoch, conf.global_accuracy, val_conf.global_accuracy, conf.iou, val_conf.iou))
         save_model(model)
