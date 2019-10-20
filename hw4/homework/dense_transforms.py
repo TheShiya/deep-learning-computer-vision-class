@@ -80,3 +80,21 @@ class ToHeatmap(object):
 
     def __call__(self, image, *args):
         return to_heatmap(image, *args, radius=self.radius)
+
+def label_to_pil_image(lbl):
+    """
+    Creates a PIL pallet Image from a pytorch tensor of labels
+    """
+    if not(isinstance(lbl, torch.Tensor) or isinstance(lbl, np.ndarray)):
+        raise TypeError('lbl should be Tensor or ndarray. Got {}.'.format(type(lbl)))
+    elif isinstance(lbl, torch.Tensor):
+        if lbl.ndimension() != 2:
+            raise ValueError('lbl should be 2 dimensional. Got {} dimensions.'.format(lbl.ndimension()))
+        lbl = lbl.numpy()
+    elif isinstance(lbl, np.ndarray):
+        if lbl.ndim != 2:
+            raise ValueError('lbl should be 2 dimensional. Got {} dimensions.'.format(lbl.ndim))
+
+    im = Image.fromarray(lbl.astype(np.uint8), mode='P')
+    im.putpalette([0xee, 0xee, 0xec, 0xfc, 0xaf, 0x3e, 0x2e, 0x34, 0x36, 0x20, 0x4a, 0x87, 0xa4, 0x0, 0x0] + [0] * 753)
+    return im
