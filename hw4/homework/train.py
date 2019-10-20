@@ -135,7 +135,7 @@ def train(args):
 
         model.eval()
         val_conf = ConfusionMatrix()
-        for img, label in valid_data:
+        for img, label, square in valid_data:
             img, label = img.to(device), label.to(device).long()
             logit = model(img)
             val_conf.add(logit.argmax(1), label)
