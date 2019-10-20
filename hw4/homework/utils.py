@@ -2,6 +2,11 @@ from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 from . import dense_transforms
 
+LABEL_NAMES = ['background', 'kart', 'pickup', 'nitro', 'bomb', 'projectile']
+DENSE_LABEL_NAMES = ['background', 'kart', 'track', 'bomb/projectile', 'pickup/nitro']
+# Distribution of classes on dense training set (background and track dominate (96%)
+DENSE_CLASS_DISTRIBUTION = [0.52683655, 0.02929112, 0.4352989, 0.0044619, 0.00411153]
+
 
 class DetectionSuperTuxDataset(Dataset):
     def __init__(self, dataset_path, transform=dense_transforms.ToTensor(), min_size=20):
