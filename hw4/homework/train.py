@@ -107,9 +107,6 @@ def train(args):
             logit = model(img)
             label = torch.squeeze(label)
 
-            print(logit.shape)
-            print(label.shape)
-
             loss_val = loss(logit.view(-1,96,128,3), label.view(-1,96,128,3))
             # if train_logger is not None and global_step % 100 == 0:
             #     train_logger.add_image('image', img[0], global_step)
