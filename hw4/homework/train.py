@@ -37,8 +37,8 @@ def train(args):
     #transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
     transform = lambda x: dense_transforms.ToHeatmap(dense_transforms.ToTensor(x))
     
-    train_data = load_dense_data('dense_data/train', num_workers=4, transform=transform)
-    valid_data = load_dense_data('dense_data/valid', num_workers=4)
+    train_data = load_detection_data('dense_data/train', num_workers=4, transform=transform)
+    valid_data = load_detection_data('dense_data/valid', num_workers=4)
 
     global_step = 0
     for epoch in range(args.num_epoch):
