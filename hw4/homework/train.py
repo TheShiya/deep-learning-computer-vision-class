@@ -39,11 +39,10 @@ def train(args):
     #transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
 
     transform = dense_transforms.Compose([
-        dense_transforms.ToTensor(),
-        dense_transforms.ToHeatmap(),
         dense_transforms.ColorJitter(0.9, 0.9, 0.9, 0.1),
         dense_transforms.RandomHorizontalFlip(),
-        dense_transforms.ToTensor()
+        dense_transforms.ToTensor(),
+        dense_transforms.ToHeatmap(),
         ])
     
     train_data = load_detection_data('dense_data/train', num_workers=4, transform=transform)
