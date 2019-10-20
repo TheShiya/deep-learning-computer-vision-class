@@ -114,13 +114,13 @@ def train(args):
             label = torch.squeeze(label)
 
             loss_val = loss(logit.view(-1,96,128,3), label.view(-1,96,128,3))
-            # if train_logger is not None and global_step % 100 == 0:
-            #     train_logger.add_image('image', img[0], global_step)
-            #     train_logger.add_image('label', np.array(dense_transforms.label_to_pil_image(label[0].cpu()).
-            #                                              convert('RGB')), global_step, dataformats='HWC')
-            #     train_logger.add_image('prediction', np.array(dense_transforms.
-            #                                                   label_to_pil_image(logit[0].argmax(dim=0).cpu()).
-            #                                                   convert('RGB')), global_step, dataformats='HWC')
+            if train_logger is not None and global_step % 100 == 0:
+                train_logger.add_image('image', img[0], global_step)
+                train_logger.add_image('label', np.array(dense_transforms.label_to_pil_image(label[0].cpu()).
+                                                         convert('RGB')), global_step, dataformats='HWC')
+                train_logger.add_image('prediction', np.array(dense_transforms.
+                                                              label_to_pil_image(logit[0].argmax(dim=0).cpu()).
+                                                              convert('RGB')), global_step, dataformats='HWC')
 
             if train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
@@ -146,13 +146,13 @@ def train(args):
             logit = model(img)
             val_conf.add(logit.argmax(1), label.argmax(1))
 
-        # if valid_logger is not None:
-        #     valid_logger.add_image('image', img[0], global_step)
-        #     valid_logger.add_image('label', np.array(dense_transforms.label_to_pil_image(label[0].cpu()).
-        #                                              convert('RGB')), global_step, dataformats='HWC')
-        #     valid_logger.add_image('prediction', np.array(dense_transforms.
-        #                                                   label_to_pil_image(logit[0].argmax(dim=0).cpu()).
-        #                                                   convert('RGB')), global_step, dataformats='HWC')
+        if valid_logger is not None:
+            valid_logger.add_image('image', img[0], global_step)
+            valid_logger.add_image('label', np.array(dense_transforms.label_to_pil_image(label[0].cpu()).
+                                                     convert('RGB')), global_step, dataformats='HWC')
+            valid_logger.add_image('prediction', np.array(dense_transforms.
+                                                          label_to_pil_image(logit[0].argmax(dim=0).cpu()).
+                                                          convert('RGB')), global_step, dataformats='HWC')
 
         if valid_logger:
             valid_logger.add_scalar('global_accuracy', val_conf.global_accuracy, global_step)
