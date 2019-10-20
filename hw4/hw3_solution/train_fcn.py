@@ -45,7 +45,7 @@ def train(args):
             img, label = img.to(device), label.to(device).long()
 
             logit = model(img)
-            loss_val = loss(logit, label)
+            loss_val = loss(logit, label.long())
             if train_logger is not None and global_step % 100 == 0:
                 train_logger.add_image('image', img[0], global_step)
                 train_logger.add_image('label', np.array(dense_transforms.label_to_pil_image(label[0].cpu()).
