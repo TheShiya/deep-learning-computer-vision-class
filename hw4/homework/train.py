@@ -25,7 +25,6 @@ def train(args):
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-    model = FCN().to(device)
     if args.continue_training:
         model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'fcn.th')))
 
