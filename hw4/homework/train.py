@@ -35,7 +35,8 @@ def train(args):
 
     import inspect
     #transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
-    transform = lambda x: dense_transforms.ToHeatmap(dense_transforms.ToTensor(x))
+
+    transform = dense_transforms.Compose([dense_transforms.ToHeatmap, dense_transforms.ToTensor])
     
     train_data = load_detection_data('dense_data/train', num_workers=4, transform=transform)
     valid_data = load_detection_data('dense_data/valid', num_workers=4)
