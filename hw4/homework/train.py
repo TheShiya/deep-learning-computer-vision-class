@@ -77,7 +77,7 @@ def train(args):
         global_step = 0
     # optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=1e-3)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
-    w = torch.as_tensor(DENSE_CLASS_DISTRIBUTION)**(-args.gamma).long().to(device)
+    w = torch.as_tensor(DENSE_CLASS_DISTRIBUTION)**(-args.gamma)
     loss = torch.nn.BCEWithLogitsLoss(weight=w / w.mean()).to(device)
 
     import inspect
@@ -98,7 +98,7 @@ def train(args):
         model.train()
         conf = ConfusionMatrix()
         for img, label, square in train_data:
-            img, label = img.to(device).long(), label.to(device).long()
+            img, label = img.to(device).float(), label.to(device).float()
 
             logit = model(img)
             label = torch.squeeze(label)
