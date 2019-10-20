@@ -96,7 +96,7 @@ def train(args):
     for epoch in range(args.num_epoch):
         model.train()
         conf = ConfusionMatrix()
-        for img, label in train_data:
+        for img, label, square in train_data:
             img, label = img.to(device), label.to(device).long()
 
             logit = model(img)
