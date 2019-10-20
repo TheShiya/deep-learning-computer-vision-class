@@ -6,6 +6,9 @@ from .utils import load_detection_data
 from . import dense_transforms
 import torch.utils.tensorboard as tb
 
+def _one_hot(x, n):
+    return (x.view(-1, 1) == torch.arange(n, dtype=x.dtype, device=x.device)).int()
+    
 class ConfusionMatrix(object):
     def _make(self, preds, labels):
         label_range = torch.arange(self.size, device=preds.device)[None, :]
