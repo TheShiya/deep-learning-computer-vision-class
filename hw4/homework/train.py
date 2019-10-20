@@ -5,6 +5,7 @@ from .models import Detector, save_model
 from .utils import load_detection_data
 from . import dense_transforms
 import torch.utils.tensorboard as tb
+import pickle
 
 def _one_hot(x, n):
     return (x.view(-1, 1) == torch.arange(n, dtype=x.dtype, device=x.device)).int()
