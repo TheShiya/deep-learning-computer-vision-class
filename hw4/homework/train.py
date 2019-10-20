@@ -145,13 +145,13 @@ def train(args):
             logit = model(img)
             val_conf.add(logit.argmax(1), label.argmax(1))
 
-        if valid_logger is not None:
-            valid_logger.add_image('image', img[0], global_step)
-            valid_logger.add_image('label', np.array(dense_transforms.label_to_pil_image(label[0].cpu()).
-                                                     convert('RGB')), global_step, dataformats='HWC')
-            valid_logger.add_image('prediction', np.array(dense_transforms.
-                                                          label_to_pil_image(logit[0].argmax(dim=0).cpu()).
-                                                          convert('RGB')), global_step, dataformats='HWC')
+        # if valid_logger is not None:
+        #     valid_logger.add_image('image', img[0], global_step)
+        #     valid_logger.add_image('label', np.array(dense_transforms.label_to_pil_image(label[0].cpu()).
+        #                                              convert('RGB')), global_step, dataformats='HWC')
+        #     valid_logger.add_image('prediction', np.array(dense_transforms.
+        #                                                   label_to_pil_image(logit[0].argmax(dim=0).cpu()).
+        #                                                   convert('RGB')), global_step, dataformats='HWC')
 
         if valid_logger:
             valid_logger.add_scalar('global_accuracy', val_conf.global_accuracy, global_step)
