@@ -27,7 +27,9 @@ def train(args):
 
     if args.continue_training:
         model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'fcn.th')))
-
+        global_step = pickle.load(open('global_step.p', 'rb'))
+    else:
+        global_step = 0
     # optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=1e-3)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
     w = torch.as_tensor(DENSE_CLASS_DISTRIBUTION)**(-args.gamma)
@@ -47,12 +49,9 @@ def train(args):
     train_data = load_detection_data('dense_data/train', num_workers=4, transform=transform)
     valid_data = load_detection_data('dense_data/valid', num_workers=4)
 
-    global_step = 0
     for epoch in range(args.num_epoch):
         model.train()
-        i = 0
         for img, label in train_data:
-            i += 1
             img, label = img.to(device), label.to(device).long()
 
             logit = model(img)
@@ -68,8 +67,8 @@ def train(args):
             if train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
 
-            if i % 20 == 0:
-                print('{}: loss: {}'.format(i, loss_val))
+            if global_step % 20 == 0:
+                print('{}: loss: {}'.format(global_step, loss_val))
 
             optimizer.zero_grad()
             loss_val.backward()
@@ -105,6 +104,8 @@ def train(args):
         if True or valid_logger is None or train_logger is None:
             print('epoch %-3d \t acc = %0.3f \t val acc = %0.3f \t iou = %0.3f \t val iou = %0.3f' %
                   (epoch, conf.global_accuracy, val_conf.global_accuracy, conf.iou, val_conf.iou))
+        
+        pickle.dump(global_step, open('global_step.p', 'wb'))
         save_model(model)
 
 
