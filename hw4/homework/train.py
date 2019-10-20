@@ -8,8 +8,7 @@ import torch.utils.tensorboard as tb
 
 
 DENSE_CLASS_DISTRIBUTION = [0.52683655, 0.02929112, 0.4352989, 0.0044619, 0.00411153]
-w = torch.as_tensor(DENSE_CLASS_DISTRIBUTION)**(-args.gamma)
-loss = torch.nn.BCEWithLogitsLoss(weight=w / w.mean()).to(device)
+
 
 
 def train(args):
@@ -33,7 +32,7 @@ def train(args):
     # optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=1e-3)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
     w = torch.as_tensor(DENSE_CLASS_DISTRIBUTION)**(-args.gamma)
-    loss = loss
+    loss = torch.nn.BCEWithLogitsLoss(weight=w / w.mean()).to(device)
 
     import inspect
     #transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
