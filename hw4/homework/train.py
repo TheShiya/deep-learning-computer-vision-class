@@ -43,7 +43,6 @@ def train(args):
     global_step = 0
     for epoch in range(args.num_epoch):
         model.train()
-        conf = ConfusionMatrix()
         for img, label in train_data:
             img, label = img.to(device), label.to(device).long()
 
@@ -59,7 +58,6 @@ def train(args):
 
             if train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
-            conf.add(logit.argmax(1), label)
 
             optimizer.zero_grad()
             loss_val.backward()
