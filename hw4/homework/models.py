@@ -3,9 +3,7 @@ import torch.nn.functional as F
 
 
 def extract_peak(heatmap, max_pool_ks=7, min_score=-5, max_det=100):
-
 	H, W = heatmap.shape
-
 	maxpool2d = torch.nn.functional.max_pool2d
 	padding = int(max_pool_ks/2)
 	max2d = maxpool2d(heatmap[None, None], kernel_size=max_pool_ks, stride=1,
@@ -93,7 +91,13 @@ class Detector(torch.nn.Module):
 					return no more than 100 detections per image
 		   Hint: Use extract_peak here
 		"""
-		raise NotImplementedError('Detector.detect')
+		detections = []
+		for i in range(3):
+			heatmap = image[i]
+			peaks = extract_peak(heatmap)
+			[detections.append((i, *p)) for p in peaks]
+
+		return detections[:100]
 
 	def detect_with_size(self, image):
 		"""
