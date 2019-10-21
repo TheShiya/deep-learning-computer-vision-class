@@ -155,7 +155,7 @@ class Detector(torch.nn.Module):
 		model = FCN()
 		model_path = path.join(path.dirname(path.abspath(__file__)), 'fcn.th')
 		print(model_path)
-		model.load_state_dict(torch.load(model_path, map_location=lambda storage, loc: storage))
+		model.load_state_dict(torch.load(model_path))
 		heatmaps = self.forward(image)
 
 		detections = []
