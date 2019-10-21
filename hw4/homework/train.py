@@ -85,6 +85,7 @@ def train(args):
     w = torch.as_tensor(DENSE_CLASS_DISTRIBUTION)
     w = (1 - w / w.sum())**args.gamma
     w = w.long()
+    w = torch.as_tensor(DENSE_CLASS_DISTRIBUTION)**(-args.gamma)
     loss = torch.nn.BCEWithLogitsLoss(weight=w).to(device)
 
     import inspect
@@ -132,7 +133,6 @@ def train(args):
         for img, label, square in valid_data:            
             img, label = img.to(device).float(), label.to(device).float()
             logit = model(img).float()
-            print(img, label, logit)
             valid_loss = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
             valid_losses.append(valid_loss)            
         
