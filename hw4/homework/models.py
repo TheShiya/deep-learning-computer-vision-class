@@ -162,14 +162,16 @@ class Detector(torch.nn.Module):
 		heatmaps = model(image)[0]
 		heatmaps = heatmaps[[1,3,4],:,:]
 
-		detections = []
+		all_detections = []
 		for i in range(3):
+			detections = []
 			heatmap = heatmaps[i]
 			peaks = extract_peak(heatmap)
 			[detections.append((i, *p)) for p in peaks]
+			detections = sorted(detections, key=lambda x: x[1])
+			all_detections += detections[-6:]
 
-		detections = sorted(detections, key=lambda x: x[1])
-		return detections[-100:], heatmaps
+		return all_detections[-100:], heatmaps
 
 	def detect_with_size(self, image):
 		"""
