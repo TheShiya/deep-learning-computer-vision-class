@@ -153,8 +153,6 @@ class DetectorGrader(Grader):
             d = det.detect(img)
             assert len(d) <= 100, 'Returned more than 100 detections'
             assert all(len(i) == 4 for i in d), 'Each detection should be a tuple (class, score, cx, cy)'
-            if i > 10:
-                break
 
 
 class DetectionGrader(Grader):

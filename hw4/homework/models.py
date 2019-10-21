@@ -128,6 +128,22 @@ class Detector(torch.nn.Module):
 				c += skip_layer_size[i]
 		self.classifier = torch.nn.Conv2d(c, n_output_channels, 1)
 
+		################ use pretrained FCN ################
+
+		device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+		from os import path
+
+		if True:
+			model = FCN()
+			model_path = path.join(path.dirname(path.abspath(__file__)), 'fcn.th')
+		else:
+			model = Detector()
+			model_path = path.join(path.dirname(path.abspath(__file__)), 'det.th')
+
+		model.load_state_dict(torch.load(model_path))
+		model.to(device)
+		self.model = model
+
 	def forward(self, x):
 		z = (x - self.input_mean[None, :, None, None].to(x.device)) / self.input_std[None, :, None, None].to(x.device)
 		up_activation = []
@@ -154,18 +170,7 @@ class Detector(torch.nn.Module):
 					return no more than 100 detections per image
 		   Hint: Use extract_peak here
 		"""
-		device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-		from os import path
-
-		if True:
-			model = FCN()
-			model_path = path.join(path.dirname(path.abspath(__file__)), 'fcn.th')
-		else:
-			model = Detector()
-			model_path = path.join(path.dirname(path.abspath(__file__)), 'det.th')
-
-		model.load_state_dict(torch.load(model_path))
-		model.to(device)
+		
 
 		image = image[None,:,:,:].to(device)
 		heatmaps = model(image)[0]
