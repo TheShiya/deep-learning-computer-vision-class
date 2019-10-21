@@ -84,6 +84,7 @@ def train(args):
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
     w = torch.as_tensor(DENSE_CLASS_DISTRIBUTION)
     w = (1 - w / w.sum())**args.gamma
+    w = w.long()
     loss = torch.nn.BCEWithLogitsLoss(weight=w).to(device)
 
     import inspect
