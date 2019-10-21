@@ -126,7 +126,6 @@ def train(args):
             loss_val.backward()
             optimizer.step()
             global_step += 1
-            break
 
         model.eval()
         valid_losses = []
@@ -147,6 +146,7 @@ def train(args):
         
         pickle.dump(global_step, open('global_step.p', 'wb'))
         save_model(model, suffix=str(epoch))
+    save_model(model, suffix='')
 
 
 if __name__ == '__main__':
