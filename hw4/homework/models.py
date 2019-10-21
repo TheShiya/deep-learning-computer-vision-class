@@ -177,7 +177,7 @@ class Detector(torch.nn.Module):
 
 		image = image[None,:,:,:]#.to(self.device)
 		heatmaps = self.forward(image)[0]
-		heatmaps = heatmaps[[1,3,4],:,:]
+		#heatmaps = heatmaps[[1,3,4],:,:]
 
 		all_detections = []
 		for i in range(3):
