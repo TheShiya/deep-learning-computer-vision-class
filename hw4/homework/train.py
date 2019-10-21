@@ -82,8 +82,9 @@ def train(args):
         global_step = 0
     # optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=1e-3)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
-    w = torch.as_tensor(DENSE_CLASS_DISTRIBUTION)**(-args.gamma)
-    loss = torch.nn.BCEWithLogitsLoss(weight=w / w.mean()).to(device)
+    w = torch.as_tensor(DENSE_CLASS_DISTRIBUTION)
+    w = (1 - w / w.sum())**args.gamma
+    loss = torch.nn.BCEWithLogitsLoss(weight=w).to(device)
 
     import inspect
     #transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
@@ -111,7 +112,6 @@ def train(args):
             img, label = img.to(device).float(), label.to(device).float()
 
             logit = model(img)
-            return logit, label
 
             loss_val = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
             # if train_logger is not None and global_step % 100 == 0:
