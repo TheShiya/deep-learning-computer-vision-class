@@ -116,7 +116,7 @@ def train(args):
             loss_val = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
             train_losses.append(loss_val)
 
-            if train_logger is not None:
+            if epoch > 0 and train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
 
             if global_step % 100 == 0:
@@ -130,14 +130,14 @@ def train(args):
         model.eval()
         valid_losses = []
         count = 0
-        for img, label, square in valid_data:
-            if count == 20:
-                break           
-            img, label = img.to(device).float(), label.to(device).float()
-            logit = model(img).float()
-            valid_loss = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
-            valid_losses.append(valid_loss)
-            count += 0          
+        # for img, label, square in valid_data:
+        #     if count == 20:
+        #         break           
+        #     img, label = img.to(device).float(), label.to(device).float()
+        #     logit = model(img).float()
+        #     valid_loss = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
+        #     valid_losses.append(valid_loss)
+        #     count += 0          
         
         avg_train_loss = sum(train_losses) / len(train_losses)
         #avg_valid_loss = sum(valid_losses) / len(valid_losses)
