@@ -178,7 +178,7 @@ class Detector(torch.nn.Module):
 			peaks = extract_peak(heatmap, min_score=0)
 			[detections.append((i, *p)) for p in peaks]
 			detections = sorted(detections, key=lambda x: x[1])
-			all_detections += detections[-10:]
+			all_detections += detections[-50:]
 
 		all_detections = sorted(all_detections, key=lambda x: x[1])
 		return all_detections[::-1][:100]#, heatmaps
