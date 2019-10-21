@@ -16,7 +16,7 @@ class ConfusionMatrix(object):
         preds_one_hot, labels_one_hot = _one_hot(preds, self.size), _one_hot(labels, self.size)
         return (labels_one_hot[:, :, None] * preds_one_hot[:, None, :]).sum(dim=0)
 
-    def __init__(self, size=5):
+    def __init__(self, size=3):
         """
         This class builds and updates a confusion matrix.
         :param size: the number of classes to consider
@@ -111,7 +111,7 @@ def train(args):
             img, label = img.to(device).float(), label.to(device).float()
 
             logit = model(img)
-            label = torch.squeeze(label)
+            return logit, label
 
             loss_val = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
             # if train_logger is not None and global_step % 100 == 0:

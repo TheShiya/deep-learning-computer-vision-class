@@ -49,6 +49,8 @@ class FCN(torch.nn.Module):
         self.input_mean = torch.Tensor([0.3521554, 0.30068502, 0.28527516])
         self.input_std = torch.Tensor([0.18182722, 0.18656468, 0.15938024])
 
+        self.batch_norm = torch.nn.BatchNorm2d(3)
+
         c = 3
         self.use_skip = use_skip
         self.n_conv = len(layers)
@@ -64,7 +66,7 @@ class FCN(torch.nn.Module):
         self.classifier = torch.nn.Conv2d(c, n_output_channels, 1)
 
     def forward(self, x):
-        z = (x - self.input_mean[None, :, None, None].to(x.device)) / self.input_std[None, :, None, None].to(x.device)
+        z = self.batch_norm(x)
         up_activation = []
         for i in range(self.n_conv):
             # Add all the information required for skip connections
