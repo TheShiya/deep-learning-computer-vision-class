@@ -127,22 +127,22 @@ def train(args):
             optimizer.step()
             global_step += 1
 
-        model.eval()
-        valid_losses = []
-        for img, label, square in valid_data:            
-            img, label = img.to(device).float(), label.to(device).float()
-            logit = model(img).float()
-            valid_loss = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
-            valid_losses.append(valid_loss)            
+        # model.eval()
+        # valid_losses = []
+        # for img, label, square in valid_data:            
+        #     img, label = img.to(device).float(), label.to(device).float()
+        #     logit = model(img).float()
+        #     valid_loss = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
+        #     valid_losses.append(valid_loss)            
         
         avg_train_loss = sum(train_losses) / len(train_losses)
-        avg_valid_loss = sum(valid_losses) / len(valid_losses)
+        #avg_valid_loss = sum(valid_losses) / len(valid_losses)
 
         if valid_logger is None or train_logger is None:
             train_logger.add_scalar('avg_loss', avg_train_loss, epoch)
-            valid_logger.add_scalar('avg_loss', avg_valid_loss, epoch)
+            #valid_logger.add_scalar('avg_loss', avg_valid_loss, epoch)
 
-        print('epoch %-3d \t train = %0.3f \t valid = %0.3f \t' % (epoch, avg_train_loss, avg_valid_loss))
+        print('epoch %-3d \t train = %0.3f \t valid = %0.3f \t' % (epoch, avg_train_loss, avg_train_loss))
         
         pickle.dump(global_step, open('global_step.p', 'wb'))
         save_model(model, suffix=str(epoch))
