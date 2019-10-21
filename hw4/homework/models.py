@@ -128,6 +128,8 @@ class Detector(torch.nn.Module):
 				c += skip_layer_size[i]
 		self.classifier = torch.nn.Conv2d(c, n_output_channels, 1)
 
+		device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+		self.device = device
 		################ use pretrained FCN ################
 
 		# device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
