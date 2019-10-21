@@ -213,7 +213,7 @@ def load_model():
 	from torch import load
 	from os import path
 	r = Detector()
-	r.load_state_dict(load(path.join(path.dirname(path.abspath(__file__)), 'det.th'), map_location='cpu'))
+	r.load_state_dict(load(path.join(path.dirname(path.abspath(__file__)), 'det.th')))#, map_location='cpu'))
 	return r
 
 
