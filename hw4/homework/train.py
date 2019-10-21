@@ -128,7 +128,7 @@ def train(args):
         model.eval()
         valid_losses = []
         for img, label, square in valid_data:            
-            img, label = img.to(device), label.to(device).long()
+            img, label = img.to(device).float(), label.to(device).float()
             logit = model(img)
             valid_loss = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
             valid_losses.append(valid_loss)            
