@@ -107,7 +107,7 @@ class Detector(torch.nn.Module):
 			return F.relu(self.c1(x))
 
 	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=3,
-		kernel_size=3, use_skip=True, min_score=[5,5,5]):
+		kernel_size=3, use_skip=True, min_score=[-5, -5, -5], FCN=False):
 		super().__init__()
 		self.min_score = min_score
 		self.input_mean = torch.Tensor([0.3521554, 0.30068502, 0.28527516])
@@ -157,6 +157,11 @@ class Detector(torch.nn.Module):
 		from os import path
 		model = Detector()
 		model_path = path.join(path.dirname(path.abspath(__file__)), 'det.th')
+
+		if self.FCN:
+			model = FCN()
+			model_path = path.join(path.dirname(path.abspath(__file__)), 'fcn.th')
+
 		model.load_state_dict(torch.load(model_path))
 		model.to(device)
 
@@ -171,7 +176,7 @@ class Detector(torch.nn.Module):
 			peaks = extract_peak(heatmap, min_score=self.min_score[i])
 			[detections.append((i, *p)) for p in peaks]
 			detections = sorted(detections, key=lambda x: x[1])
-			all_detections += detections[-50:]
+			all_detections += detections[-10:]
 
 		all_detections = sorted(all_detections, key=lambda x: x[1])
 		return all_detections[::-1][:100]#, heatmaps
