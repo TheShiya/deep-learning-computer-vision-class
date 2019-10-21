@@ -104,23 +104,17 @@ def train(args):
     train_data = load_detection_data('dense_data/train', num_workers=4, transform=transform)
     valid_data = load_detection_data('dense_data/valid', num_workers=4, transform=transform_valid)
 
+
+
     model = model.to(device)
     for epoch in range(args.num_epoch):
         model.train()
-        conf = ConfusionMatrix()
+        train_losses = []        
         for img, label, square in train_data:
             img, label = img.to(device).float(), label.to(device).float()
-
             logit = model(img)
-
             loss_val = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
-            # if train_logger is not None and global_step % 100 == 0:
-            #     train_logger.add_image('image', img[0], global_step)
-            #     train_logger.add_image('label', np.array(dense_transforms.label_to_pil_image(label[0].cpu()).
-            #                                              convert('RGB')), global_step, dataformats='HWC')
-            #     train_logger.add_image('prediction', np.array(dense_transforms.
-            #                                                   label_to_pil_image(logit[0].argmax(dim=0).cpu()).
-            #                                                   convert('RGB')), global_step, dataformats='HWC')
+            train_losses.append(loss_val)
 
             if train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
@@ -128,7 +122,6 @@ def train(args):
             if global_step % 100 == 0:
                 print('{}: loss: {}'.format(global_step, loss_val))
 
-            conf.add(logit.argmax(1), label.argmax(1))
             optimizer.zero_grad()
             loss_val.backward()
             optimizer.step()
@@ -140,29 +133,18 @@ def train(args):
             train_logger.add_scalar('iou', conf.iou, global_step)
 
         model.eval()
-        val_conf = ConfusionMatrix()
+        valid_losses = []
         for img, label, square in valid_data:
             img, label = img.to(device), label.to(device).long()
             logit = model(img)
-            val_conf.add(logit.argmax(1), label.argmax(1))
+            valid_loss = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
+            valid_losses.append(valid_loss)
+            valid_logger.add_scalar('iou', conf.iou, global_step)
 
-        # if valid_logger is not None:
-        #     valid_logger.add_image('image', img[0], global_step)
-        #     valid_logger.add_image('label', np.array(dense_transforms.label_to_pil_image(label[0].cpu()).
-        #                                              convert('RGB')), global_step, dataformats='HWC')
-        #     valid_logger.add_image('prediction', np.array(dense_transforms.
-        #                                                   label_to_pil_image(logit[0].argmax(dim=0).cpu()).
-        #                                                   convert('RGB')), global_step, dataformats='HWC')
-
-        if valid_logger:
-            valid_logger.add_scalar('global_accuracy', val_conf.global_accuracy, global_step)
-            valid_logger.add_scalar('average_accuracy', val_conf.average_accuracy, global_step)
-            valid_logger.add_scalar('iou', val_conf.iou, global_step)
-
-
+        avg_train_loss = sum(train_losses) / len(train_losses)
+        avg_valid_loss = sum(valid_losses) / len(valid_losses)
         if True or valid_logger is None or train_logger is None:
-            print('epoch %-3d \t acc = %0.3f \t val acc = %0.3f \t iou = %0.3f \t val iou = %0.3f' %
-                  (epoch, conf.global_accuracy, val_conf.global_accuracy, conf.iou, val_conf.iou))
+            print('epoch %-3d \t train = %0.3f \t valid = %0.3f \t' % (epoch, avg_train_loss, avg_valid_loss))
         
         pickle.dump(global_step, open('global_step.p', 'wb'))
         save_model(model)
