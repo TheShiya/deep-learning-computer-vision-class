@@ -104,8 +104,6 @@ def train(args):
     train_data = load_detection_data('dense_data/train', num_workers=4, transform=transform)
     valid_data = load_detection_data('dense_data/valid', num_workers=4, transform=transform_valid)
 
-
-
     model = model.to(device)
     for epoch in range(args.num_epoch):
         model.train()
@@ -147,7 +145,7 @@ def train(args):
             print('epoch %-3d \t train = %0.3f \t valid = %0.3f \t' % (epoch, avg_train_loss, avg_valid_loss))
         
         pickle.dump(global_step, open('global_step.p', 'wb'))
-        save_model(model)
+        save_model(model, suffix=str(epoch))
 
 
 if __name__ == '__main__':

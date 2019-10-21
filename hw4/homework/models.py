@@ -112,10 +112,10 @@ class Detector(torch.nn.Module):
 		raise NotImplementedError('Detector.detect_with_size')
 
 
-def save_model(model):
+def save_model(model, suffix=''):
 	from torch import save
 	from os import path
-	return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'det.th'))
+	return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'det{}.th'.format(suffix)))
 
 
 def load_model():
