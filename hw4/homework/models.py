@@ -173,8 +173,7 @@ class Detector(torch.nn.Module):
 		   @return: List of detections [(class_id, score, cx, cy), ...],
 					return no more than 100 detections per image
 		   Hint: Use extract_peak here
-		"""		
-
+		"""	
 		image = image[None,:,:,:]#.to(self.device)
 		heatmaps = self.forward(image)[0]
 		#heatmaps = heatmaps[[1,3,4],:,:]

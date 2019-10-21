@@ -59,7 +59,7 @@ class ConfusionMatrix(object):
         return self.matrix / (self.matrix.sum(1, keepdims=True) + 1e-5)
 
 # Distribution of karts, bombs/projectiles, and pickup items
-DENSE_CLASS_DISTRIBUTION = [0.77357634, 0.11783845, 0.10858521]
+DENSE_CLASS_DISTRIBUTION = [0.77357634, 0.11783845 / 2, 0.10858521]
 
 def train(args):
     from os import path
@@ -92,7 +92,7 @@ def train(args):
     #transform = eval(args.transform, {k: v for k, v in inspect.getmembers(dense_transforms) if inspect.isclass(v)})
 
     transform = dense_transforms.Compose([
-        dense_transforms.ColorJitter(0.9, 0.9, 0.9, 0.1),
+        dense_transforms.ColorJitter(0.9, 0.9, 0.7, 0.1),
         dense_transforms.RandomHorizontalFlip(),
         dense_transforms.ToTensor(),
         dense_transforms.ToHeatmap(),
