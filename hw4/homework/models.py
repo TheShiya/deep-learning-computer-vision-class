@@ -106,7 +106,7 @@ class Detector(torch.nn.Module):
 		def forward(self, x):
 			return F.relu(self.c1(x))
 
-	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=5,
+	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=3,
 		kernel_size=3, use_skip=True, min_score=[5,5,5]):
 		super().__init__()
 		self.min_score = min_score
@@ -155,8 +155,8 @@ class Detector(torch.nn.Module):
 		"""
 		device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 		from os import path
-		model = FCN()
-		model_path = path.join(path.dirname(path.abspath(__file__)), 'fcn.th')
+		model = Detector()
+		model_path = path.join(path.dirname(path.abspath(__file__)), 'det.th')
 		model.load_state_dict(torch.load(model_path))
 		model.to(device)
 

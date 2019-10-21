@@ -127,13 +127,17 @@ def train(args):
             optimizer.step()
             global_step += 1
 
-        # model.eval()
-        # valid_losses = []
-        # for img, label, square in valid_data:            
-        #     img, label = img.to(device).float(), label.to(device).float()
-        #     logit = model(img).float()
-        #     valid_loss = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
-        #     valid_losses.append(valid_loss)            
+        model.eval()
+        valid_losses = []
+        count = 0
+        for img, label, square in valid_data:
+            if count == 20:
+                break           
+            img, label = img.to(device).float(), label.to(device).float()
+            logit = model(img).float()
+            valid_loss = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
+            valid_losses.append(valid_loss)
+            count += 0          
         
         avg_train_loss = sum(train_losses) / len(train_losses)
         #avg_valid_loss = sum(valid_losses) / len(valid_losses)
