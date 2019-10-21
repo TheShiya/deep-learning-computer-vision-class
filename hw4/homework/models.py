@@ -107,7 +107,7 @@ class Detector(torch.nn.Module):
 			return F.relu(self.c1(x))
 
 	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=3,
-		kernel_size=3, use_skip=True, min_score=[-5, -5, -5], use_FCN=True):
+		kernel_size=3, use_skip=True, min_score=[-5, -5, -5], use_FCN=False):
 		super().__init__()
 		self.min_score = min_score
 		self.FCN = FCN
@@ -130,21 +130,21 @@ class Detector(torch.nn.Module):
 
 		################ use pretrained FCN ################
 
-		device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-		from os import path
+		# device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+		# from os import path
 
-		if use_FCN:
-			model = FCN()
-			model_path = path.join(path.dirname(path.abspath(__file__)), 'fcn.th')
-		else:
-			model = Detector()
-			model_path = path.join(path.dirname(path.abspath(__file__)), 'det.th')
+		# if use_FCN:
+		# 	model = FCN()
+		# 	model_path = path.join(path.dirname(path.abspath(__file__)), 'fcn.th')
+		# else:
+		# 	model = Detector()
+		# 	model_path = path.join(path.dirname(path.abspath(__file__)), 'det.th')
 
-		model.load_state_dict(torch.load(model_path))
-		model.to(device)
+		# model.load_state_dict(torch.load(model_path))
+		# model.to(device)
 
-		self.device = device
-		self.model = model
+		# self.device = device
+		# self.model = model
 
 	def forward(self, x):
 		z = (x - self.input_mean[None, :, None, None].to(x.device)) / self.input_std[None, :, None, None].to(x.device)
@@ -171,11 +171,10 @@ class Detector(torch.nn.Module):
 		   @return: List of detections [(class_id, score, cx, cy), ...],
 					return no more than 100 detections per image
 		   Hint: Use extract_peak here
-		"""
-		
+		"""		
 
 		image = image[None,:,:,:].to(self.device)
-		heatmaps = self.model(image)[0]
+		heatmaps = self.forward(image)[0]
 		heatmaps = heatmaps[[1,3,4],:,:]
 
 		all_detections = []
