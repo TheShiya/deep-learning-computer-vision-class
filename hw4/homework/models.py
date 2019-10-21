@@ -156,12 +156,13 @@ class Detector(torch.nn.Module):
 		"""
 		device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 		from os import path
-		model = Detector()
-		model_path = path.join(path.dirname(path.abspath(__file__)), 'det.th')
 
 		if self.FCN:
 			model = FCN()
 			model_path = path.join(path.dirname(path.abspath(__file__)), 'fcn.th')
+		else:
+			model = Detector()
+			model_path = path.join(path.dirname(path.abspath(__file__)), 'det.th')
 
 		model.load_state_dict(torch.load(model_path))
 		model.to(device)
