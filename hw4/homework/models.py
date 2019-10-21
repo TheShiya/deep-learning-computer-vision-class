@@ -162,8 +162,6 @@ class Detector(torch.nn.Module):
 		heatmaps = self.forward(image)[0]
 		heatmaps = heatmaps[[1,3,4],:,:]
 
-		print(heatmaps.shape)
-
 		detections = []
 		for i in range(3):
 			heatmap = heatmaps[i]
