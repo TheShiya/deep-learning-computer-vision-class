@@ -46,7 +46,7 @@ class Detector(torch.nn.Module):
 		def forward(self, x):
 			return F.relu(self.c1(x))
 
-	def __init__(self, layers=[16, 32, 64, 96, 128, 160], n_output_channels=3, kernel_size=3, use_skip=True):
+	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=3, kernel_size=3, use_skip=True):
 		super().__init__()
 		self.input_mean = torch.Tensor([0.3521554, 0.30068502, 0.28527516])
 		self.input_std = torch.Tensor([0.18182722, 0.18656468, 0.15938024])
