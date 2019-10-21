@@ -25,6 +25,66 @@ def extract_peak(heatmap, max_pool_ks=7, min_score=-5, max_det=100):
 	return output
 
 
+class FCN(torch.nn.Module):
+	class Block(torch.nn.Module):
+		def __init__(self, n_input, n_output, kernel_size=3, stride=2):
+			super().__init__()
+			self.c1 = torch.nn.Conv2d(n_input, n_output, kernel_size=kernel_size, padding=kernel_size // 2,
+									  stride=stride)
+			self.c2 = torch.nn.Conv2d(n_output, n_output, kernel_size=kernel_size, padding=kernel_size // 2)
+			self.c3 = torch.nn.Conv2d(n_output, n_output, kernel_size=kernel_size, padding=kernel_size // 2)
+			self.skip = torch.nn.Conv2d(n_input, n_output, kernel_size=1, stride=stride)
+
+		def forward(self, x):
+			return F.relu(self.c3(F.relu(self.c2(F.relu(self.c1(x)))))) + self.skip(x)
+	class UpBlock(torch.nn.Module):
+		def __init__(self, n_input, n_output, kernel_size=3, stride=2):
+			super().__init__()
+			self.c1 = torch.nn.ConvTranspose2d(n_input, n_output, kernel_size=kernel_size, padding=kernel_size // 2,
+									  stride=stride, output_padding=1)
+
+		def forward(self, x):
+			return F.relu(self.c1(x))
+
+	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=5, kernel_size=3, use_skip=True):
+		super().__init__()
+		self.input_mean = torch.Tensor([0.3521554, 0.30068502, 0.28527516])
+		self.input_std = torch.Tensor([0.18182722, 0.18656468, 0.15938024])
+
+		self.batch_norm = torch.nn.BatchNorm2d(3)
+
+		c = 3
+		self.use_skip = use_skip
+		self.n_conv = len(layers)
+		skip_layer_size = [3] + layers[:-1]
+		for i, l in enumerate(layers):
+			self.add_module('conv%d' % i, self.Block(c, l, kernel_size, 2))
+			c = l
+		for i, l in list(enumerate(layers))[::-1]:
+			self.add_module('upconv%d' % i, self.UpBlock(c, l, kernel_size, 2))
+			c = l
+			if self.use_skip:
+				c += skip_layer_size[i]
+		self.classifier = torch.nn.Conv2d(c, n_output_channels, 1)
+
+	def forward(self, x):
+		z = self.batch_norm(x)
+		up_activation = []
+		for i in range(self.n_conv):
+			# Add all the information required for skip connections
+			up_activation.append(z)
+			z = self._modules['conv%d'%i](z)
+
+		for i in reversed(range(self.n_conv)):
+			z = self._modules['upconv%d'%i](z)
+			# Fix the padding
+			z = z[:, :, :up_activation[i].size(2), :up_activation[i].size(3)]
+			# Add the skip connection
+			if self.use_skip:
+				z = torch.cat([z, up_activation[i]], dim=1)
+		return self.classifier(z)
+
+
 class Detector(torch.nn.Module):
 	class Block(torch.nn.Module):
 		def __init__(self, n_input, n_output, kernel_size=3, stride=2):
@@ -91,6 +151,11 @@ class Detector(torch.nn.Module):
 					return no more than 100 detections per image
 		   Hint: Use extract_peak here
 		"""
+		from os import path
+		model = FCN()
+		model_path = path.join(path.dirname(path.abspath(__file__)), 'fcn.th')
+		print(model_path)
+		model.load_state_dict(torch.load(model_path, map_location=lambda storage, loc: storage))
 		heatmaps = self.forward(image)
 
 		detections = []
