@@ -87,7 +87,7 @@ class FCN(torch.nn.Module):
 
 class Detector(torch.nn.Module):
 	class Block(torch.nn.Module):
-		def __init__(self, n_input, n_output, kernel_size=3, stride=2, min_score=3):
+		def __init__(self, n_input, n_output, kernel_size=3, stride=2):
 			super().__init__()
 			self.c1 = torch.nn.Conv2d(n_input, n_output, kernel_size=kernel_size, padding=kernel_size // 2,
 									  stride=stride)
@@ -106,7 +106,8 @@ class Detector(torch.nn.Module):
 		def forward(self, x):
 			return F.relu(self.c1(x))
 
-	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=5, kernel_size=3, use_skip=True):
+	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=5,
+		kernel_size=3, use_skip=True, min_score=3):
 		super().__init__()
 		self.min_score = min_score
 		self.input_mean = torch.Tensor([0.3521554, 0.30068502, 0.28527516])
