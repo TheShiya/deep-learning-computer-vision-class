@@ -128,8 +128,8 @@ class Detector(torch.nn.Module):
 				c += skip_layer_size[i]
 		self.classifier = torch.nn.Conv2d(c, n_output_channels, 1)
 
-		device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-		self.device = device
+
+
 		################ use pretrained FCN ################
 
 		# device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -175,7 +175,7 @@ class Detector(torch.nn.Module):
 		   Hint: Use extract_peak here
 		"""		
 
-		image = image[None,:,:,:].to(self.device)
+		image = image[None,:,:,:]#.to(self.device)
 		heatmaps = self.forward(image)[0]
 		heatmaps = heatmaps[[1,3,4],:,:]
 
@@ -213,7 +213,7 @@ def load_model():
 	from torch import load
 	from os import path
 	r = Detector()
-	r.load_state_dict(load(path.join(path.dirname(path.abspath(__file__)), 'det.th')))#, map_location='cpu'))
+	r.load_state_dict(load(path.join(path.dirname(path.abspath(__file__)), 'det.th'), map_location='cpu'))
 	return r
 
 
