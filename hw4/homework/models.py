@@ -158,7 +158,7 @@ class Detector(torch.nn.Module):
 		model.load_state_dict(torch.load(model_path))
 		model.to(device)
 
-		heatmaps = model(image)[0]
+		heatmaps = model(image[None,:,:,:])[0]
 		heatmaps = heatmaps[[1,3,4],:,:]
 
 		detections = []
