@@ -142,6 +142,8 @@ class Detector(torch.nn.Module):
 
 		model.load_state_dict(torch.load(model_path))
 		model.to(device)
+
+		self.device = device
 		self.model = model
 
 	def forward(self, x):
