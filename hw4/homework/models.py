@@ -174,7 +174,7 @@ class Detector(torch.nn.Module):
 			all_detections += detections[-50:]
 
 		all_detections = sorted(all_detections, key=lambda x: x[1])
-		return all_detections[::-1][:100], heatmaps
+		return all_detections[::-1][:100]#, heatmaps
 
 	def detect_with_size(self, image):
 		"""
