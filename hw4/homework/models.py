@@ -107,7 +107,7 @@ class Detector(torch.nn.Module):
 			return F.relu(self.c1(x))
 
 	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=5,
-		kernel_size=3, use_skip=True, min_score=3):
+		kernel_size=3, use_skip=True, min_score=4.2):
 		super().__init__()
 		self.min_score = min_score
 		self.input_mean = torch.Tensor([0.3521554, 0.30068502, 0.28527516])
