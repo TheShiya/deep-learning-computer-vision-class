@@ -87,7 +87,7 @@ class FCN(torch.nn.Module):
 
 class Detector(torch.nn.Module):
 	class Block(torch.nn.Module):
-		def __init__(self, n_input, n_output, kernel_size=3, stride=2):
+		def __init__(self, n_input, n_output, kernel_size=3, stride=2, min_score=3):
 			super().__init__()
 			self.c1 = torch.nn.Conv2d(n_input, n_output, kernel_size=kernel_size, padding=kernel_size // 2,
 									  stride=stride)
@@ -166,7 +166,7 @@ class Detector(torch.nn.Module):
 		for i in range(3):
 			detections = []
 			heatmap = heatmaps[i]
-			peaks = extract_peak(heatmap)
+			peaks = extract_peak(heatmap, min_score=self.min_score)
 			[detections.append((i, *p)) for p in peaks]
 			detections = sorted(detections, key=lambda x: x[1])
 			all_detections += detections[-50:]
