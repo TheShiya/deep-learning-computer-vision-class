@@ -107,7 +107,7 @@ class Detector(torch.nn.Module):
 			return F.relu(self.c1(x))
 
 	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=5,
-		kernel_size=3, use_skip=True, min_score=4.2):
+		kernel_size=3, use_skip=True, min_score=[5,5,5]):
 		super().__init__()
 		self.min_score = min_score
 		self.input_mean = torch.Tensor([0.3521554, 0.30068502, 0.28527516])
@@ -168,7 +168,7 @@ class Detector(torch.nn.Module):
 		for i in range(3):
 			detections = []
 			heatmap = heatmaps[i]
-			peaks = extract_peak(heatmap, min_score=self.min_score)
+			peaks = extract_peak(heatmap, min_score=self.min_score[i])
 			[detections.append((i, *p)) for p in peaks]
 			detections = sorted(detections, key=lambda x: x[1])
 			all_detections += detections[-50:]
