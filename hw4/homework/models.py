@@ -107,7 +107,7 @@ class Detector(torch.nn.Module):
 			return F.relu(self.c1(x))
 
 	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=3,
-		kernel_size=3, use_skip=True, min_score=[-5, -5, -5], use_FCN=False):
+		kernel_size=3, use_skip=True, min_score=[-5, -5, -5], use_FCN=True):
 		super().__init__()
 		self.min_score = min_score
 		self.FCN = FCN
