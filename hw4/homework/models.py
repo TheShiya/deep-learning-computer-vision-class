@@ -158,7 +158,9 @@ class Detector(torch.nn.Module):
 		print(model_path)
 		model.load_state_dict(torch.load(model_path))
 		model.to(device)
-		heatmaps = self.forward(image)
+
+		heatmaps = self.forward(image)[0]
+		heatmaps = heatmaps.argmax(1)
 
 		print(heatmaps.shape)
 
