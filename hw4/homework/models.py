@@ -151,11 +151,13 @@ class Detector(torch.nn.Module):
 					return no more than 100 detections per image
 		   Hint: Use extract_peak here
 		"""
+		device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 		from os import path
 		model = FCN()
 		model_path = path.join(path.dirname(path.abspath(__file__)), 'fcn.th')
 		print(model_path)
 		model.load_state_dict(torch.load(model_path))
+		model.to(device)
 		heatmaps = self.forward(image)
 
 		detections = []
