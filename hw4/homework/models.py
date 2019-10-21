@@ -157,7 +157,7 @@ class Detector(torch.nn.Module):
 		device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 		from os import path
 
-		if self.FCN:
+		if True:
 			model = FCN()
 			model_path = path.join(path.dirname(path.abspath(__file__)), 'fcn.th')
 		else:
@@ -175,7 +175,7 @@ class Detector(torch.nn.Module):
 		for i in range(3):
 			detections = []
 			heatmap = heatmaps[i]
-			peaks = extract_peak(heatmap, min_score=self.min_score[i])
+			peaks = extract_peak(heatmap, min_score=0)
 			[detections.append((i, *p)) for p in peaks]
 			detections = sorted(detections, key=lambda x: x[1])
 			all_detections += detections[-10:]
