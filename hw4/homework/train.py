@@ -60,6 +60,7 @@ class ConfusionMatrix(object):
 
 # Distribution of karts, bombs/projectiles, and pickup items
 DENSE_CLASS_DISTRIBUTION = [0.77357634, 0.11783845 / 2, 0.10858521]
+DENSE_CLASS_DISTRIBUTION = [0.4, 0.06, 0.1]
 
 def train(args):
     from os import path
