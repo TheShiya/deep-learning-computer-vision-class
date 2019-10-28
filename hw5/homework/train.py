@@ -50,7 +50,7 @@ def train(args):
     for epoch in range(args.num_epoch):
         model.train()
         train_losses = []        
-        for img, label, square in train_data:
+        for img, label in train_data:
             img, label = img.to(device).float(), label.to(device).float()
             logit = model(img).float()
             
@@ -74,7 +74,7 @@ def train(args):
         model.eval()
         valid_losses = []
         count = 0
-        for img, label, square in valid_data:         
+        for img, label in valid_data:         
             img, label = img.to(device).float(), label.to(device).float()
             logit = model(img).float()
             valid_loss = loss(logit, label)
