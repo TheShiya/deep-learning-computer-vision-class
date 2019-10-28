@@ -115,6 +115,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		self.prob_first = torch.nn.Parameter(torch.ones(1, 28, 1)/28)
 		self.classifier = torch.nn.Sigmoid()
 		self.batch_norm = torch.nn.BatchNorm1d(28)
+		self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 	def forward(self, x):
 		"""
@@ -135,7 +136,7 @@ class TCN(torch.nn.Module, LanguageModel):
 # 		o = self.classifier(o)
 # 		return self.batch_norm(o)
 		B, vocab_size, L = x.shape
-		return torch.ones(B, vocab_size, L+1)
+		return torch.ones(B, vocab_size, L+1).to(self.device)
 
 	def predict_all(self, some_text):
 		"""
