@@ -116,7 +116,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		net.append(torch.nn.Conv1d(in_ch, 28, kernel_size=1))
 		self.net = torch.nn.Sequential(*net)
 		self.prob_first = torch.nn.Parameter(torch.ones(1, 28, 1)/28)
-		self.classifier = torch.nn.functional.log_softmax
+		self.classifier = torch.nn.LogSoftmax(dim=1)
 		self.batch_norm = torch.nn.BatchNorm1d(28)
 		self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -149,8 +149,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		#return torch.log(torch.ones(28, len(some_text)+1)/28)
 		tensor = utils.one_hot(some_text)[None]
 		o = self.forward(tensor)[0]
-		o = o/o.sum(0)
-		return torch.log(o)
+		return o
 
 
 def save_model(model):
