@@ -103,8 +103,8 @@ class TCN(torch.nn.Module, LanguageModel):
 		channels = [40]*10
 		for ch in channels:
 			net.append(self.CausalConv1dBlock(in_ch, ch, kernel_size=kernel_size))
-			in_ch = ch + 1
-		net.append(self.CausalConv1dBlock(in_ch, 28, kernel_size=1))
+			in_ch = ch * 2
+		net.append(self.Conv1d(in_ch, 28, kernel_size=1))
 		self.net = torch.nn.Sequential(*net)
 		self.prob_first = torch.nn.Parameter(torch.ones(1, 28, 1)/28)
 		self.sigmoid = torch.nn.Sigmoid()
