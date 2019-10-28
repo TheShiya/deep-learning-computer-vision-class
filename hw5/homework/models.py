@@ -62,7 +62,7 @@ vocab_size = 28
 
 class TCN(torch.nn.Module, LanguageModel):
 	class CausalConv1dBlock(torch.nn.Module):
-		def __init__(self, in_channels, out_channels, kernel_size, dilation=1):
+		def __init__(self, in_channels, out_channels, kernel_size, dilation=1, is_residual=False):
 			"""
 			Your code here.
 			Implement a Causal convolution followed by a non-linearity (e.g. ReLU).
@@ -80,14 +80,14 @@ class TCN(torch.nn.Module, LanguageModel):
 			self.c3 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
 			self.relu = torch.nn.ReLU()
 			self.skip = torch.nn.Conv1d(in_channels, out_channels, kernel_size=1, stride=1)
-			
+			self.is_residual = is_residual
 
 		def forward(self, x):
 			z = self.batch_norm(x)
 			z = self.relu(self.c1(self.pad(z)))
 			z = self.relu(self.c2(self.pad(z)))
 			z = self.relu(self.c3(self.pad(z)))
-			return z + self.skip(x)
+			return z + int(self.is_residual) * self.skip(x)
 
 	def __init__(self):
 		"""
@@ -106,8 +106,9 @@ class TCN(torch.nn.Module, LanguageModel):
 		net = []		
 		in_ch = 28
 		channels = [20,30,40,50]
-		for ch in channels:
-			net.append(self.CausalConv1dBlock(in_ch, ch, kernel_size=kernel_size))
+		is_residual = [0,1,0,1]
+		for ch, res in zip(channels, is_residual):
+			net.append(self.CausalConv1dBlock(in_ch, ch, kernel_size=kernel_size, is_residual=res))
 			in_ch = ch
 		net.append(torch.nn.Conv1d(in_ch, 28, kernel_size=1))
 		self.net = torch.nn.Sequential(*net)
