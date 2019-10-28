@@ -50,10 +50,13 @@ def train(args):
     for epoch in range(args.num_epoch):
         model.train()
         train_losses = []        
-        for img, label in train_data:
-            img, label = img.to(device).float(), label.to(device).float()
-            logit = model(img).float()
+        for string in train_data:
             
+            data = one_hot(string[:-1])
+            label = one_hot(string)
+            data, label = data.to(device).float(), label.to(device).float()
+            logit = model(data).float()
+            print('data shape::::::::::', data.shape)
             print('logit shape::::::::::', logit.shape)
             print('label shape::::::::::', label.shape)
             
@@ -74,9 +77,11 @@ def train(args):
         model.eval()
         valid_losses = []
         count = 0
-        for img, label in valid_data:         
-            img, label = img.to(device).float(), label.to(device).float()
-            logit = model(img).float()
+        for string in valid_data:
+            data = one_hot(string[:-1])
+            label = one_hot(string)
+            data, label = data.to(device).float(), label.to(device).float()
+            logit = model(data).float()
             valid_loss = loss(logit, label)
             valid_losses.append(valid_loss)
             count += 0          
