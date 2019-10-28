@@ -60,9 +60,6 @@ def train(args):
             label = torch.cat([one_hot(s)[None] for s in string_batch], 0)
             data, label = data.to(device).float(), label.to(device).float()
             logit = model(data).float()
-            print('data shape::::::::::', data.shape)
-            print('logit shape::::::::::', logit.shape)
-            print('label shape::::::::::', label.shape)
             
             loss_val = loss(logit, label)
             train_losses.append(loss_val)
