@@ -73,15 +73,18 @@ class TCN(torch.nn.Module, LanguageModel):
 			:param dilation: Conv1d parameter
 			"""
 			super().__init__()
+			self.batch_norm = torch.nn.BatchNorm1d(in_channels)
 			self.pad = torch.nn.ConstantPad1d((kernel_size-1, 0), 0)
 			self.c1 = torch.nn.Conv1d(in_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
 			self.c2 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
 			self.c3 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
 			self.relu = torch.nn.ReLU()
 			self.skip = torch.nn.Conv1d(in_channels, out_channels, kernel_size=1, stride=1)
+			
 
 		def forward(self, x):
-			z = self.relu(self.c1(self.pad(x)))
+			z = self.batch_norm(x)
+			z = self.relu(self.c1(self.pad(z)))
 			z = self.relu(self.c2(self.pad(z)))
 			z = self.relu(self.c3(self.pad(z)))
 			return z + self.skip(x)
@@ -110,6 +113,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		self.net = torch.nn.Sequential(*net)
 		self.prob_first = torch.nn.Parameter(torch.ones(1, 28, 1)/28)
 		self.sigmoid = torch.nn.Sigmoid()
+		self.batch_norm = torch.nn.BatchNorm1d(28)
 
 	def forward(self, x):
 		"""
@@ -122,11 +126,12 @@ class TCN(torch.nn.Module, LanguageModel):
 		# B, vocab_size, L = x.shape
 		# return torch.randn(B, vocab_size, L+1)
 		#print('x shape::::::::::::', x.shape)
+		
 		B, vocab_size, L = x.shape
 		prob_firsts = torch.cat([self.prob_first]*B)
 		cat = torch.cat([prob_firsts, x], 2)
-
-		return self.sigmoid(self.net(cat)) 
+		o = self.sigmoid(self.net(cat)) 
+		return self.batch_norm(o)
 
 	def predict_all(self, some_text):
 		"""
