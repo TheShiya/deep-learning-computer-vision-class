@@ -81,7 +81,7 @@ class TCN(torch.nn.Module, LanguageModel):
 			self.skip = torch.nn.Conv1d(in_channels, out_channels, kernel_size=1, stride=1)
 
 		def forward(self, x):
-			z = self.relu(self.c1(self.pad(z)))
+			z = self.relu(self.c1(self.pad(x)))
 			z = self.relu(self.c2(self.pad(z)))
 			z = self.relu(self.c3(self.pad(z)))
 			return z + self.skip(x)
