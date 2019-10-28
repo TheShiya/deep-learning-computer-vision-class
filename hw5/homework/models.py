@@ -74,15 +74,18 @@ class TCN(torch.nn.Module, LanguageModel):
 			"""
 			super().__init__()
 			self.pad = torch.nn.ConstantPad1d((kernel_size-1, 0), 0)
-			self.c1 = torch.nn.Conv1d(vocab_size, vocab_size,
-				kernel_size=kernel_size, stride=1, dilation=1)
+			self.c1 = torch.nn.Conv1d(in_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
+			self.c2 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
+			self.c3 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
 			self.relu = torch.nn.ReLU()
+			self.skip = torch.nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride)
 
 		def forward(self, x):
 			z = self.pad(x)
-			z = self.c1(z)
-			z = self.relu(z)
-			return torch.cat([x, z], dim=1)
+			z = self.relu(self.c1(z))
+			z = self.relu(self.c2(z))
+			z = self.relu(self.c3(z))
+			return z + self.skip(x)
 
 	def __init__(self):
 		"""
@@ -103,7 +106,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		channels = [40]*10
 		for ch in channels:
 			net.append(self.CausalConv1dBlock(in_ch, ch, kernel_size=kernel_size))
-			in_ch = ch * 2
+			in_ch = ch
 		net.append(torch.nn.Conv1d(in_ch, 28, kernel_size=1))
 		self.net = torch.nn.Sequential(*net)
 		self.prob_first = torch.nn.Parameter(torch.ones(1, 28, 1)/28)
