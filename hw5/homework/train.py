@@ -96,6 +96,7 @@ def train(args):
         print('epoch %-3d \t train = %0.3f \t valid = %0.3f \t' % (epoch, avg_train_loss, avg_train_loss))
         
         save_model(model)
+    return data, label
 
 
 if __name__ == '__main__':
