@@ -137,7 +137,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		cat = torch.cat([prob_firsts, x], 2)
 		o = self.net(cat)
 		o = self.classifier(o)
-		return self.batch_norm(o)
+		return o
 
 	def predict_all(self, some_text):
 		"""
