@@ -79,8 +79,8 @@ def train(args):
         valid_losses = []
         count = 0
         for string in valid_data:
-            data = one_hot(string[:-1])
-            label = one_hot(string)
+            data = torch.cat([one_hot(s[:-1])[None] for s in string_batch], 0)
+            label = torch.cat([one_hot(s)[None] for s in string_batch], 0)
             data, label = data.to(device).float(), label.to(device).float()
             logit = model(data).float()
             valid_loss = loss(logit, label)
