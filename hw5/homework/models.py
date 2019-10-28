@@ -116,7 +116,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		net.append(torch.nn.Conv1d(in_ch, 28, kernel_size=1))
 		self.net = torch.nn.Sequential(*net)
 		self.prob_first = torch.nn.Parameter(torch.ones(1, 28, 1)/28)
-		self.classifier = torch.nn.functional.log_softmax()
+		self.classifier = torch.nn.functional.log_softmax
 		self.batch_norm = torch.nn.BatchNorm1d(28)
 		self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
