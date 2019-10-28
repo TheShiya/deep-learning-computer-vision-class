@@ -105,7 +105,7 @@ class TCN(torch.nn.Module, LanguageModel):
 
 		net = []		
 		in_ch = 28
-		channels = [20,30,40,50]
+		channels = list(range(20,50,5))
 		is_residual = [0,1,0,1]
 		for ch, res in zip(channels, is_residual):
 			net.append(self.CausalConv1dBlock(in_ch, ch, kernel_size=kernel_size, is_residual=res))
@@ -131,7 +131,8 @@ class TCN(torch.nn.Module, LanguageModel):
 		B, vocab_size, L = x.shape
 		prob_firsts = torch.cat([self.prob_first]*B)
 		cat = torch.cat([prob_firsts, x], 2)
-		o = self.sigmoid(self.net(cat)) 
+		o = self.net(cat)
+		#o = self.sigmoid(o)
 		return self.batch_norm(o)
 
 	def predict_all(self, some_text):
