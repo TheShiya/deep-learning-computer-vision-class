@@ -43,17 +43,21 @@ def train(args):
     #optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
     loss = torch.nn.BCEWithLogitsLoss().to(device)
     
-    train_data = SpeechDataset('data/train.txt')
-    valid_data = SpeechDataset('data/valid.txt')
+    train_data = list(SpeechDataset('data/train.txt'))
+    valid_data = list(SpeechDataset('data/valid.txt'))
+    
+    def make_batch(l, size=32):
+        for i in range(0, len(l), size):
+            yield l[i:i+size]        
 
     model = model.to(device)
     for epoch in range(args.num_epoch):
         model.train()
         train_losses = []        
-        for string in train_data:
+        for string_batch in make_batch(train_data):
             
-            data = one_hot(string[:-1])
-            label = one_hot(string)
+            data = torch.cat([utils.one_hot(s[:-1])[None] for s in string_batch], 0)
+            label = torch.cat([utils.one_hot(s)[None] for s in string_batch], 0)
             data, label = data.to(device).float(), label.to(device).float()
             logit = model(data).float()
             print('data shape::::::::::', data.shape)
