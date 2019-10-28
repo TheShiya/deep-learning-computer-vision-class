@@ -78,7 +78,7 @@ class TCN(torch.nn.Module, LanguageModel):
 			self.c2 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
 			self.c3 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
 			self.relu = torch.nn.ReLU()
-			self.skip = torch.nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1)
+			self.skip = torch.nn.Conv1d(in_channels, out_channels, kernel_size=1, stride=1)
 
 		def forward(self, x):
 			z = self.pad(x)
