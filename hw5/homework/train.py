@@ -77,7 +77,9 @@ def train(args):
         model.eval()
         valid_losses = []
         count = 0
-        for string_batch in make_batch(train_data):
+        for string_batch in make_batch(valid_data, size=64):
+            if count ==10:
+                break
             data = torch.cat([one_hot(s[:-1])[None] for s in string_batch], 0)
             label = torch.cat([one_hot(s)[None] for s in string_batch], 0)
             data, label = data.to(device).float(), label.to(device).float()
