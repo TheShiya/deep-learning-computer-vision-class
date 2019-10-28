@@ -113,7 +113,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		net.append(torch.nn.Conv1d(in_ch, 28, kernel_size=1))
 		self.net = torch.nn.Sequential(*net)
 		self.prob_first = torch.nn.Parameter(torch.ones(1, 28, 1)/28)
-		self.log_sigmoid = torch.nn.LogSigmoid()
+		self.classifier = torch.nn.Sigmoid()
 		self.batch_norm = torch.nn.BatchNorm1d(28)
 
 	def forward(self, x):
@@ -132,7 +132,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		prob_firsts = torch.cat([self.prob_first]*B)
 		cat = torch.cat([prob_firsts, x], 2)
 		o = self.net(cat)
-		o = self.log_sigmoid(o)
+		o = self.classifier(o)
 		return self.batch_norm(o)
 
 	def predict_all(self, some_text):
@@ -145,7 +145,6 @@ class TCN(torch.nn.Module, LanguageModel):
 		#return torch.log(torch.ones(28, len(some_text)+1)/28)
 		tensor = utils.one_hot(some_text)[None]
 		o = self.forward(tensor)[0]
-		o = torch.exp(o)
 		o = o/o.sum(0)
 		return torch.log(o)
 
