@@ -56,8 +56,8 @@ def train(args):
         train_losses = []        
         for string_batch in make_batch(train_data):
             
-            data = torch.cat([utils.one_hot(s[:-1])[None] for s in string_batch], 0)
-            label = torch.cat([utils.one_hot(s)[None] for s in string_batch], 0)
+            data = torch.cat([one_hot(s[:-1])[None] for s in string_batch], 0)
+            label = torch.cat([one_hot(s)[None] for s in string_batch], 0)
             data, label = data.to(device).float(), label.to(device).float()
             logit = model(data).float()
             print('data shape::::::::::', data.shape)
