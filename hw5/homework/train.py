@@ -77,23 +77,23 @@ def train(args):
         model.eval()
         valid_losses = []
         count = 0
-#         for string_batch in make_batch(train_data):
-#             data = torch.cat([one_hot(s[:-1])[None] for s in string_batch], 0)
-#             label = torch.cat([one_hot(s)[None] for s in string_batch], 0)
-#             data, label = data.to(device).float(), label.to(device).float()
-#             logit = model(data).float()
-#             valid_loss = loss(logit, label)
-#             valid_losses.append(valid_loss)
-#             count += 0          
+        for string_batch in make_batch(train_data):
+            data = torch.cat([one_hot(s[:-1])[None] for s in string_batch], 0)
+            label = torch.cat([one_hot(s)[None] for s in string_batch], 0)
+            data, label = data.to(device).float(), label.to(device).float()
+            logit = model(data).float()
+            valid_loss = loss(logit, label)
+            valid_losses.append(valid_loss)
+            count += 0          
         
         avg_train_loss = sum(train_losses) / len(train_losses)
-        #avg_valid_loss = sum(valid_losses) / len(valid_losses)
+        avg_valid_loss = sum(valid_losses) / len(valid_losses)
 
         if valid_logger is None or train_logger is None:
             train_logger.add_scalar('avg_loss', avg_train_loss, epoch)
             #valid_logger.add_scalar('avg_loss', avg_valid_loss, epoch)
 
-        print('epoch %-3d \t train = %0.3f \t valid = %0.3f \t' % (epoch, avg_train_loss, avg_train_loss))
+        print('epoch %-3d \t train = %0.3f \t valid = %0.3f \t' % (epoch, avg_train_loss, avg_valid_loss))
         
         save_model(model)
     return data, label, logit
