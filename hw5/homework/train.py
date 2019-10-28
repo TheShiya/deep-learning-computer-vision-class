@@ -24,6 +24,8 @@ def train(args):
     
 def train(args):
     from os import path
+    import torch.utils.tensorboard as tb
+    
     model = TCN()
     train_logger, valid_logger = None, None
     if args.log_dir is not None:
