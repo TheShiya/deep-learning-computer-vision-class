@@ -100,7 +100,7 @@ class TCN(torch.nn.Module, LanguageModel):
 
 		net = []		
 		in_ch = 28
-		channels = [40]*20
+		channels = [40]*10
 		for ch in channels:
 			net.append(self.CausalConv1dBlock(in_ch, ch, kernel_size=kernel_size))
 			in_ch = ch
