@@ -36,9 +36,8 @@ def train(args):
 
     if args.continue_training:
         model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'tcn.th')))
-        global_step = pickle.load(open('global_step.p', 'rb'))
-    else:
-        global_step = 0
+    
+    global_step = 0
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=1e-3)
     #optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
     loss = torch.nn.BCEWithLogitsLoss().to(device)
@@ -96,9 +95,7 @@ def train(args):
 
         print('epoch %-3d \t train = %0.3f \t valid = %0.3f \t' % (epoch, avg_train_loss, avg_train_loss))
         
-        pickle.dump(global_step, open('global_step.p', 'wb'))
-        save_model(model, suffix=str(epoch))
-    save_model(model, suffix='')
+        save_model(model)
 
 
 if __name__ == '__main__':
