@@ -129,14 +129,12 @@ class TCN(torch.nn.Module, LanguageModel):
 		# return torch.randn(B, vocab_size, L+1)
 		#print('x shape::::::::::::', x.shape)
 		
-# 		B, vocab_size, L = x.shape
-# 		prob_firsts = torch.cat([self.prob_first]*B)
-# 		cat = torch.cat([prob_firsts, x], 2)
-# 		o = self.net(cat)
-# 		o = self.classifier(o)
-# 		return self.batch_norm(o)
 		B, vocab_size, L = x.shape
-		return torch.ones(B, vocab_size, L+1).to(self.device)
+		prob_firsts = torch.cat([self.prob_first]*B)
+		cat = torch.cat([prob_firsts, x], 2)
+		o = self.net(cat)
+		o = self.classifier(o)
+		return self.batch_norm(o)
 
 	def predict_all(self, some_text):
 		"""
