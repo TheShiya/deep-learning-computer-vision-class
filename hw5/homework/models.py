@@ -73,7 +73,7 @@ class TCN(torch.nn.Module, LanguageModel):
 			:param dilation: Conv1d parameter
 			"""
 			super().__init__()
-			self.batch_norm = torch.nn.BatchNorm1d(in_channels)
+			self.batch_norm_in = torch.nn.BatchNorm1d(in_channels)
 			self.pad = torch.nn.ConstantPad1d((kernel_size-1, 0), 0)
 			self.c1 = torch.nn.Conv1d(in_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
 			self.c2 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
@@ -81,13 +81,16 @@ class TCN(torch.nn.Module, LanguageModel):
 			self.relu = torch.nn.ReLU()
 			self.skip = torch.nn.Conv1d(in_channels, out_channels, kernel_size=1, stride=1)
 			self.is_residual = is_residual
+			self.batch_norm_out = torch.nn.BatchNorm1d(out_channels)
 
 		def forward(self, x):
-			z = self.batch_norm(x)
+			z = self.batch_norm_in(x)
 			z = self.relu(self.c1(self.pad(z)))
 			z = self.relu(self.c2(self.pad(z)))
 			z = self.relu(self.c3(self.pad(z)))
-			return z + int(self.is_residual) * self.skip(x)
+			z = z + int(self.is_residual) * self.skip(x)
+			z = self.batch_norm_out(z)
+			return z
 
 	def __init__(self):
 		"""
@@ -101,11 +104,11 @@ class TCN(torch.nn.Module, LanguageModel):
 		# l = torch.nn.Linear(2, 2)
 		# net = torch.nn.Sequential(l, l)
 		# self.network = net
-		kernel_size = 3
+		kernel_size = 2
 
 		net = []		
 		in_ch = 28
-		channels = list(range(20,50,5))
+		channels = [28]*1
 		is_residual = [0,1,0,1]
 		for ch, res in zip(channels, is_residual):
 			net.append(self.CausalConv1dBlock(in_ch, ch, kernel_size=kernel_size, is_residual=res))
