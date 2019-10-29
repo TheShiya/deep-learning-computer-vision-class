@@ -108,8 +108,9 @@ class TCN(torch.nn.Module, LanguageModel):
 
 		net = []		
 		in_ch = 28
-		channels = [28]*1
-		is_residual = [0,1,0,1]
+		n_layers = 8
+		channels = [28] * n_layers
+		is_residual = [0,1] * (n_layers // 2)
 		for ch, res in zip(channels, is_residual):
 			net.append(self.CausalConv1dBlock(in_ch, ch, kernel_size=kernel_size, is_residual=res))
 			in_ch = ch
