@@ -38,8 +38,8 @@ def train(args):
         model.load_state_dict(torch.load(path.join(path.dirname(path.abspath(__file__)), 'tcn.th')))
     
     global_step = 0
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=1e-3)
-    #optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
+    #optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=1e-3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
     loss = torch.nn.BCEWithLogitsLoss().to(device)
     
     train_data = list(SpeechDataset('data/train.txt'))
