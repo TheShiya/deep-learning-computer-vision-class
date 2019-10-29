@@ -74,9 +74,11 @@ class TCN(torch.nn.Module, LanguageModel):
 			"""
 			super().__init__()
 			self.batch_norm_in = torch.nn.BatchNorm1d(in_channels)
-			self.pad = torch.nn.ConstantPad1d((kernel_size+(kernel_size*dilation)-1, 0), 0)
+			self.pad1 = torch.nn.ConstantPad1d((kernel_size+(kernel_size*dilation)-1, 0), 0)
 			self.c1 = torch.nn.Conv1d(in_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=dilation)
+			self.pad2 = torch.nn.ConstantPad1d((kernel_size-1, 0), 0)
 			self.c2 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
+			self.pad3 = torch.nn.ConstantPad1d((kernel_size-1, 0), 0)
 			self.c3 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
 			self.relu = torch.nn.ReLU()
 			self.skip = torch.nn.Conv1d(in_channels, out_channels, kernel_size=1, stride=1)
@@ -85,9 +87,9 @@ class TCN(torch.nn.Module, LanguageModel):
 
 		def forward(self, x):
 			z = self.batch_norm_in(x)
-			z = self.relu(self.c1(self.pad(z)))
-			z = self.relu(self.c2(self.pad(z)))
-			z = self.relu(self.c3(self.pad(z)))
+			z = self.relu(self.c1(self.pad1(z)))
+			z = self.relu(self.c2(self.pad2(z)))
+			z = self.relu(self.c3(self.pad3(z)))
 			z = z + int(self.is_residual) * self.skip(x)
 			z = self.batch_norm_out(z)
 			return z
@@ -104,7 +106,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		# l = torch.nn.Linear(2, 2)
 		# net = torch.nn.Sequential(l, l)
 		# self.network = net
-		kernel_size = 2
+		kernel_size = 3
 
 		net = []		
 		in_ch = 28
