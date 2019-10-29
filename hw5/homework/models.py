@@ -74,8 +74,8 @@ class TCN(torch.nn.Module, LanguageModel):
 			"""
 			super().__init__()
 			self.batch_norm_in = torch.nn.BatchNorm1d(in_channels)
-			self.pad = torch.nn.ConstantPad1d((kernel_size-1, 0), 0)
-			self.c1 = torch.nn.Conv1d(in_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
+			self.pad = torch.nn.ConstantPad1d((kernel_size+(kernel_size*dilation)-1, 0), 0)
+			self.c1 = torch.nn.Conv1d(in_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=dilation)
 			self.c2 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
 			self.c3 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
 			self.relu = torch.nn.ReLU()
@@ -109,8 +109,8 @@ class TCN(torch.nn.Module, LanguageModel):
 		net = []		
 		in_ch = 28
 		n_layers = 8
-		channels = [28] * n_layers
-		is_residual = [0,1] * (n_layers // 2)
+		channels = [30,30,40,40]
+		is_residual = [0,1] * (len(channels) // 2)
 		for ch, res in zip(channels, is_residual):
 			net.append(self.CausalConv1dBlock(in_ch, ch, kernel_size=kernel_size, is_residual=res))
 			in_ch = ch
