@@ -30,6 +30,8 @@ def sample_random(model: LanguageModel, max_length: int = 100):
     :param max_length: The maximum sentence length
     :return: A string
     """
+    import torch
+    
     output = ''
     curr_char = ''
 
