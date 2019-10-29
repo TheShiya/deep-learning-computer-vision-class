@@ -62,7 +62,7 @@ vocab_size = 28
 
 class TCN(torch.nn.Module, LanguageModel):
 	class CausalConv1dBlock(torch.nn.Module):
-		def __init__(self, in_channels, out_channels, kernel_size, dilation=1):
+		def __init__(self, in_channels, out_channels, kernel_size, dilation=1, is_residual=False):
 			"""
 			Your code here.
 			Implement a Causal convolution followed by a non-linearity (e.g. ReLU).
@@ -73,15 +73,23 @@ class TCN(torch.nn.Module, LanguageModel):
 			:param dilation: Conv1d parameter
 			"""
 			super().__init__()
+			self.batch_norm_in = torch.nn.BatchNorm1d(in_channels)
 			self.pad = torch.nn.ConstantPad1d((kernel_size-1, 0), 0)
-			self.c1 = torch.nn.Conv1d(vocab_size, vocab_size,
-				kernel_size=kernel_size, stride=1, dilation=1)
+			self.c1 = torch.nn.Conv1d(in_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
+			self.c2 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
+			self.c3 = torch.nn.Conv1d(out_channels, out_channels, kernel_size=kernel_size, stride=1, dilation=1)
 			self.relu = torch.nn.ReLU()
+			self.skip = torch.nn.Conv1d(in_channels, out_channels, kernel_size=1, stride=1)
+			self.is_residual = is_residual
+			self.batch_norm_out = torch.nn.BatchNorm1d(out_channels)
 
 		def forward(self, x):
-			z = self.pad(x)
-			z = self.c1(z)
-			z = self.relu(z)
+			z = self.batch_norm_in(x)
+			z = self.relu(self.c1(self.pad(z)))
+			z = self.relu(self.c2(self.pad(z)))
+			z = self.relu(self.c3(self.pad(z)))
+			z = z + int(self.is_residual) * self.skip(x)
+			z = self.batch_norm_out(z)
 			return z
 
 	def __init__(self):
@@ -96,18 +104,21 @@ class TCN(torch.nn.Module, LanguageModel):
 		# l = torch.nn.Linear(2, 2)
 		# net = torch.nn.Sequential(l, l)
 		# self.network = net
-		kernel_size = 3
+		kernel_size = 2
 
 		net = []		
 		in_ch = 28
-		channels = [40,40,40,40,40]
-		for ch in channels:
-			net.append(self.CausalConv1dBlock(in_ch, ch, kernel_size=kernel_size))
+		channels = [28]*1
+		is_residual = [0,1,0,1]
+		for ch, res in zip(channels, is_residual):
+			net.append(self.CausalConv1dBlock(in_ch, ch, kernel_size=kernel_size, is_residual=res))
 			in_ch = ch
-		net.append(self.CausalConv1dBlock(in_ch, 28, kernel_size=1))
+		net.append(torch.nn.Conv1d(in_ch, 28, kernel_size=1))
 		self.net = torch.nn.Sequential(*net)
 		self.prob_first = torch.nn.Parameter(torch.ones(1, 28, 1)/28)
-		self.sigmoid = torch.nn.Sigmoid()
+		self.classifier = torch.nn.LogSoftmax(dim=1)
+		self.batch_norm = torch.nn.BatchNorm1d(28)
+		self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 	def forward(self, x):
 		"""
@@ -120,11 +131,13 @@ class TCN(torch.nn.Module, LanguageModel):
 		# B, vocab_size, L = x.shape
 		# return torch.randn(B, vocab_size, L+1)
 		#print('x shape::::::::::::', x.shape)
+		
 		B, vocab_size, L = x.shape
 		prob_firsts = torch.cat([self.prob_first]*B)
 		cat = torch.cat([prob_firsts, x], 2)
-
-		return self.sigmoid(self.net(cat)) 
+		o = self.net(cat)
+		o = self.classifier(o)
+		return o
 
 	def predict_all(self, some_text):
 		"""
@@ -136,8 +149,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		#return torch.log(torch.ones(28, len(some_text)+1)/28)
 		tensor = utils.one_hot(some_text)[None]
 		o = self.forward(tensor)[0]
-		o = o/o.sum(0)
-		return torch.log(o)
+		return o
 
 
 def save_model(model):
