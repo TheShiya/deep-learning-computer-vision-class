@@ -113,7 +113,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		n_layers = 8
 		channels = [64]*8
 		is_residual = [1,1] * (len(channels) // 2)
-		dilations = [2,1,2,1,2,1]
+		dilations = [2,1,2,1,2,1,2,1]
 		for ch, res, dil in zip(channels, is_residual, dilations):
 			net.append(self.CausalConv1dBlock(in_ch, ch,
 				kernel_size=kernel_size, dilation=dil, is_residual=res))
