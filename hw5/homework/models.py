@@ -106,14 +106,14 @@ class TCN(torch.nn.Module, LanguageModel):
 		# l = torch.nn.Linear(2, 2)
 		# net = torch.nn.Sequential(l, l)
 		# self.network = net
-		kernel_size = 5
+		kernel_size = 6
 
 		net = []		
 		in_ch = 28
 		n_layers = 8
-		channels = [32, 32, 32, 32, 48, 48, 48, 48]
+		channels = [32, 32, 32, 32]*2
 		is_residual = [1,1] * (len(channels) // 2)
-		dilations = [2,1,1,1,1,1]
+		dilations = [3,2,1,1,1,1]
 		for ch, res, dil in zip(channels, is_residual, dilations):
 			net.append(self.CausalConv1dBlock(in_ch, ch,
 				kernel_size=kernel_size, dilation=dil, is_residual=res))
