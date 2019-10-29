@@ -88,6 +88,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		def forward(self, x):
 			z = self.batch_norm_in(x)
 			z = self.relu(self.c1(self.pad1(z)))
+			print(z.shape)
 			z = self.relu(self.c2(self.pad2(z)))
 			z = self.relu(self.c3(self.pad3(z)))
 			z = z + int(self.is_residual) * self.skip(x)
