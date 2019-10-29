@@ -111,7 +111,7 @@ class TCN(torch.nn.Module, LanguageModel):
 		net = []		
 		in_ch = 28
 		n_layers = 8
-		channels = [50]*8
+		channels = [64]*8
 		is_residual = [1,1] * (len(channels) // 2)
 		dilations = [2,1,2,1,2,1]
 		for ch, res, dil in zip(channels, is_residual, dilations):
