@@ -14,7 +14,9 @@ def log_likelihood(model: LanguageModel, some_text: str):
     :param some_text:
     :return: float
     """
-    raise NotImplementedError('log_likelihood')
+    ll_matrix = model.predict_all(some_text)[:,:-1]
+    ll = (ll_matrix * utils.one_hot(some_text)).sum()
+    return ll.item()
 
 
 def sample_random(model: LanguageModel, max_length: int = 100):
@@ -28,7 +30,16 @@ def sample_random(model: LanguageModel, max_length: int = 100):
     :param max_length: The maximum sentence length
     :return: A string
     """
-    raise NotImplementedError('sample_random')
+    output = ''
+    curr_char = ''
+
+    while curr_char != '.' and len(output) < max_length:
+        log_probs = model.predict_next(curr_char)
+        dist = torch.distributions.categorical.Categorical(logits=log_probs)
+        curr_char = utils.vocab[dist.sample([1]).item()]
+        output += curr_char
+
+    return output
 
 
 class TopNHeap:
@@ -71,7 +82,33 @@ def beam_search(model: LanguageModel, beam_size: int, n_results: int = 10, max_l
                                    This option favors longer strings.
     :return: A list of strings of size n_results
     """
-    raise NotImplementedError('beam_search')
+    heap = TopNHeap(N=beam_size)
+    vocab = 'abcdefghijklmnopqrstuvwxyz .'
+
+    next_likes = model.predict_next('')
+    for i, next_like in enumerate(next_likes):
+        element = ((next_like).item(), vocab[i])
+        if element not in [e[1] for e in heap.elements]:
+            heap.add(element)
+
+    for depth in range(max_length):        
+        for like, string in heap.elements:
+            if string[-1] == '.':
+                continue
+            next_likes = model.predict_next(string[-1])
+            for i, next_like in enumerate(next_likes):
+                if average_log_likelihood:
+                    curr_len = len(string)
+                    avg_like = (like*curr_len + next_like.item())/(curr_len + 1)
+                    element = (avg_like, string + vocab[i])
+                else:
+                    element = (like + next_like.item(), string + vocab[i])            
+                if element[1] not in [e[1] for e in heap.elements]:
+                    heap.add(element)
+
+    sorted_heap = sorted(heap.elements, key=lambda x: x[0])[::-1]
+    output = [e[1] for e in sorted_heap[:n_results]]
+    return output
 
 
 if __name__ == "__main__":
