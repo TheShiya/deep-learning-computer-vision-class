@@ -64,7 +64,7 @@ def train(args):
         model.eval()
         valid_losses = []
         count = 0
-        for img, label, square in valid_data:
+        for img, label in valid_data:
             img, label = img.to(device).float(), label.to(device).float()
             logit = model(img).float()
             pred = (logit + 1)/2 * resolution
