@@ -48,7 +48,7 @@ def train(args):
             logit = model(img).float()
             x_label, y_label = label[:,0], label[:,1]
             x_logit, y_logit = logit[:,0], logit[:,1]
-            loss_val = loss(logit, label) - logit# + 0.1*loss(x_logit, x_label)
+            loss_val = loss(logit, label)# - logit# + 0.1*loss(x_logit, x_label)
             train_losses.append(loss_val)
 
             if epoch > 0 and train_logger is not None:
