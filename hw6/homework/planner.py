@@ -23,9 +23,9 @@ class Planner(torch.nn.Module):
 									  stride=stride, output_padding=1)
 
 		def forward(self, x):
-			return F.relu(self.c1(x))
-
-	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=1, kernel_size=3, use_skip=True):
+			return F.relu(self.c1(x)) 
+#[16, 32, 64, 96, 128]
+	def __init__(self, layers=[16, 32, 64, 80, 96], n_output_channels=1, kernel_size=3, use_skip=True):
 		super().__init__()
 		
 		self.batch_norm = torch.nn.BatchNorm2d(3)
