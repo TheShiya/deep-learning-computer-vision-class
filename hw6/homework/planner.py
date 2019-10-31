@@ -59,9 +59,9 @@ class Planner(torch.nn.Module):
 			# Add the skip connection
 			if self.use_skip:
 				z = torch.cat([z, up_activation[i]], dim=1)
+				
 		heatmap = self.classifier(z)
-		heatmap = torch.squeeze(heatmap)
-		
+		heatmap = torch.squeeze(heatmap)		
 		return spatial_argmax(heatmap)
 		
 	# def __init__(self):
