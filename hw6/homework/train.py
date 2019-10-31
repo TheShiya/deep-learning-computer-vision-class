@@ -7,6 +7,7 @@ from . import dense_transforms
 
 def train(args):
     from os import path
+    import pickle
     model = Planner()
     train_logger, valid_logger = None, None
     if args.log_dir is not None:
@@ -52,7 +53,7 @@ def train(args):
             if epoch > 0 and train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
 
-            if global_step % 100 == 0:
+            if global_step % 10 == 0:
                 print('{}: loss: {}'.format(global_step, loss_val))
 
             optimizer.zero_grad()
