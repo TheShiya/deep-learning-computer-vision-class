@@ -29,7 +29,9 @@ class Planner(torch.nn.Module):
 		super().__init__()
 		
 		self.batch_norm = torch.nn.BatchNorm2d(3)
-
+		self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+		self.resolution = torch.FloatTensor([128, 96]).to(device)
+		
 		c = 3
 		self.use_skip = use_skip
 		self.n_conv = len(layers)
@@ -59,10 +61,12 @@ class Planner(torch.nn.Module):
 			# Add the skip connection
 			if self.use_skip:
 				z = torch.cat([z, up_activation[i]], dim=1)
-				
+
 		heatmap = self.classifier(z)
-		heatmap = torch.squeeze(heatmap)		
-		return spatial_argmax(heatmap)
+		heatmap = torch.squeeze(heatmap, dim=1)
+		aim = spatial_argmax(heatmap)
+		aim = (aim + 1)/2 * self.resolution
+		return aim
 		
 	# def __init__(self):
 	# 	super().__init__()
@@ -86,7 +90,7 @@ def save_model(model, suffix=''):
 	from torch import save
 	from os import path
 	if isinstance(model, Planner):
-		return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'planner_{}.th'.format(suffix)))
+		return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'planner{}.th'.format(suffix)))
 	raise ValueError("model type '%s' not supported!" % str(type(model)))
 
 

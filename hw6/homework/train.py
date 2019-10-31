@@ -29,7 +29,7 @@ def train(args):
     #loss = torch.nn.BCEWithLogitsLoss().to(device) #weight=w
     loss = torch.nn.MSELoss(reduction='mean')
     transform = dense_transforms.Compose([
-        dense_transforms.ColorJitter(0.9, 0.9, 0.7, 0.1),
+        dense_transforms.ColorJitter(0.8, 0.6, 0.6, 0.1),
         dense_transforms.RandomHorizontalFlip(),
         dense_transforms.ToTensor(),
         ])
@@ -37,17 +37,14 @@ def train(args):
     train_data = load_data('drive_data/', transform=transform)
     valid_data = load_data('drive_data/', transform=dense_transforms.ToTensor())
 
-    resolution = torch.FloatTensor([128, 96]).to(device)
-
     model = model.to(device)
     for epoch in range(args.num_epoch):
         model.train()
         train_losses = []        
         for img, label in train_data:
             img, label = img.to(device).float(), label.to(device).float()
-            logit = model(img).float()
-            pred = (logit + 1)/2 * resolution
-            loss_val = loss(pred, label)
+            logit = model(img).float()            
+            loss_val = loss(logit, label)
             train_losses.append(loss_val)
 
             if epoch > 0 and train_logger is not None:
