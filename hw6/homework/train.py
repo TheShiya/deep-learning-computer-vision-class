@@ -46,7 +46,8 @@ def train(args):
         for img, label in train_data:
             img, label = img.to(device).float(), label.to(device).float()
             logit = model(img).float()
-            loss_val = loss(logit, label) + 0.2*loss(logit[:,0], x_center)
+
+            loss_val = loss(x_logit, x_label) + 0.5*loss(y_logit, y_label)
             train_losses.append(loss_val)
 
             if epoch > 0 and train_logger is not None:

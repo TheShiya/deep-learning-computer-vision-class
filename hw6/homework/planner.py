@@ -25,7 +25,7 @@ class Planner(torch.nn.Module):
 		def forward(self, x):
 			return F.relu(self.c1(x)) 
 #[16, 32, 64, 96, 128]
-	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=1, kernel_size=3, use_skip=True):
+	def __init__(self, layers=[16, 32, 64, 96, 128, 160], n_output_channels=1, kernel_size=3, use_skip=True):
 		super().__init__()
 		
 		self.batch_norm = torch.nn.BatchNorm2d(3)
@@ -45,7 +45,6 @@ class Planner(torch.nn.Module):
 			if self.use_skip:
 				c += skip_layer_size[i]
 		self.classifier = torch.nn.Conv2d(c, n_output_channels, 1)
-		self.avg_pool = torch.nn.AvgPool2d(2, stride=1, padding=(1,0))
 
 	def forward(self, x):
 		z = self.batch_norm(x)
@@ -64,7 +63,6 @@ class Planner(torch.nn.Module):
 				z = torch.cat([z, up_activation[i]], dim=1)
 
 		heatmap = self.classifier(z)
-		heatmap = self.avg_pool(heatmap)
 		heatmap = torch.squeeze(heatmap, dim=1)
 		aim = spatial_argmax(heatmap)
 		aim = (aim + 1)/2 * self.resolution
