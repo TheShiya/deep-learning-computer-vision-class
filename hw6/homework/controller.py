@@ -22,15 +22,11 @@ def control(aim_point, current_vel):
 
     x, y, z = aim_point
 
-    # steer_factor = args['steer_factor']
-    # drift_x_threshold = args['drift_x_threshold']
-    # brake_veldiff_threshold = args['brake_veldiff_threshold']
-    # driff_acceleration = args['driff_acceleration']
-    if abs(x) >= steer_x_threshold:
-    	action.steer = max(min(steer_factor * x, 1), -1)    
     if current_vel < target_velocity:
         action.acceleration = 1
-    if abs(x) >= drift_x_threshold:    	
+    if abs(x) >= steer_x_threshold:
+    	action.steer = steer_factor * x
+    if abs(x) >= drift_x_threshold: 	
     	action.acceleration = max(0.1, 1 - current_vel/target_velocity)
     	if current_vel > drift_vel_threshold:
     		action.drift = True
