@@ -82,11 +82,11 @@ class Planner(torch.nn.Module):
 	# 	raise NotImplementedError("Planner.forward")
 
 
-def save_model(model):
+def save_model(model, suffix=''):
 	from torch import save
 	from os import path
 	if isinstance(model, Planner):
-		return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'planner.th'))
+		return save(model.state_dict(), path.join(path.dirname(path.abspath(__file__)), 'planner_{}.th'.format(suffix)))
 	raise ValueError("model type '%s' not supported!" % str(type(model)))
 
 
