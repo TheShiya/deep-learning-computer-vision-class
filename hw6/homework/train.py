@@ -33,8 +33,8 @@ def train(args):
         dense_transforms.RandomHorizontalFlip(),
         dense_transforms.ToTensor(),
         ])    
-    train_data = load_data('drive_data/', transform=transform)
-    valid_data = load_data('drive_data/', transform=dense_transforms.ToTensor())
+    train_data = load_data('drive_data/train', transform=transform)
+    valid_data = load_data('drive_data/valid', transform=dense_transforms.ToTensor())
 
     batch_size = 128
     x_center = torch.FloatTensor([128//2]*batch_size).to(device)
@@ -65,22 +65,22 @@ def train(args):
         model.eval()
         valid_losses = []
         count = 0
-        # for img, label in valid_data:
-        #     img, label = img.to(device).float(), label.to(device).float()
-        #     logit = model(img).float()
-        #     pred = (logit + 1)/2 * resolution
-        #     valid_loss = loss(pred, label)
-        #     valid_losses.append(valid_loss)
-        #     count += 0
+        for img, label in valid_data:
+            img, label = img.to(device).float(), label.to(device).float()
+            logit = model(img).float()
+            pred = (logit + 1)/2 * resolution
+            valid_loss = loss(pred, label)
+            valid_losses.append(valid_loss)
+            count += 0
         
         avg_train_loss = sum(train_losses) / len(train_losses)
-        #avg_valid_loss = sum(valid_losses) / len(valid_losses)
+        avg_valid_loss = sum(valid_losses) / len(valid_losses)
 
         if valid_logger is None or train_logger is None:
             train_logger.add_scalar('avg_loss', avg_train_loss, epoch)
             #valid_logger.add_scalar('avg_loss', avg_valid_loss, epoch)
 
-        print('epoch %-3d \t train = %0.3f \t valid =' % (epoch, avg_train_loss))
+        print('epoch %-3d \t train = %0.3f \t valid =' % (epoch, avg_train_loss, avg_valid_loss))
         
         pickle.dump(global_step, open('global_step.p', 'wb'))
         save_model(model, suffix=str(epoch))
