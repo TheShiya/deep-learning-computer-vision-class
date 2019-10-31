@@ -26,16 +26,17 @@ def train(args):
         global_step = 0
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
-    #loss = torch.nn.BCEWithLogitsLoss().to(device) #weight=w
     loss = torch.nn.MSELoss(reduction='mean')
+
     transform = dense_transforms.Compose([
         dense_transforms.ColorJitter(0.8, 0.6, 0.6, 0.1),
         dense_transforms.RandomHorizontalFlip(),
         dense_transforms.ToTensor(),
-        ])
-    
+        ])    
     train_data = load_data('drive_data/', transform=transform)
     valid_data = load_data('drive_data/', transform=dense_transforms.ToTensor())
+
+    x_center = torch.FloatTensor([128//2]).to(device)
 
     model = model.to(device)
     for epoch in range(args.num_epoch):
@@ -43,8 +44,8 @@ def train(args):
         train_losses = []        
         for img, label in train_data:
             img, label = img.to(device).float(), label.to(device).float()
-            logit = model(img).float()            
-            loss_val = loss(logit, label)
+            logit = model(img).float()
+            loss_val = loss(logit, label) + 0.2*loss(logit[:,0], center)
             train_losses.append(loss_val)
 
             if epoch > 0 and train_logger is not None:

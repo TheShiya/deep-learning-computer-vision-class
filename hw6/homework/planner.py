@@ -45,7 +45,7 @@ class Planner(torch.nn.Module):
 			if self.use_skip:
 				c += skip_layer_size[i]
 		self.classifier = torch.nn.Conv2d(c, n_output_channels, 1)
-		self.avg_pool = torch.nn.AvgPool2d(3, stride=1, padding=1)
+		self.avg_pool = torch.nn.AvgPool2d(2, stride=1, padding=(1,0))
 
 	def forward(self, x):
 		z = self.batch_norm(x)
