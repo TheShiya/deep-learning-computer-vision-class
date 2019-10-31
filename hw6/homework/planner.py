@@ -27,7 +27,7 @@ class Planner(torch.nn.Module):
 
 	def __init__(self, layers=[16, 32, 64, 96, 128], n_output_channels=1, kernel_size=3, use_skip=True):
 		super().__init__()
-		self.resolution = torch.FloatTensor([128, 96])
+		
 		self.batch_norm = torch.nn.BatchNorm2d(3)
 
 		c = 3
@@ -62,7 +62,7 @@ class Planner(torch.nn.Module):
 		heatmap = self.classifier(z)
 		heatmap = torch.squeeze(heatmap)
 		
-		return (spatial_argmax(heatmap) + 1)/2 * self.resolution
+		return spatial_argmax(heatmap)
 		
 	# def __init__(self):
 	# 	super().__init__()
