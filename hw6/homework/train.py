@@ -64,23 +64,22 @@ def train(args):
         model.eval()
         valid_losses = []
         count = 0
-        # for img, label, square in valid_data:
-        #     if count == 20:
-        #         break           
-        #     img, label = img.to(device).float(), label.to(device).float()
-        #     logit = model(img).float()
-        #     valid_loss = loss(logit.permute((0,2,3,1)), label.permute((0,2,3,1)))
-        #     valid_losses.append(valid_loss)
-        #     count += 0          
+        for img, label, square in valid_data:
+            img, label = img.to(device).float(), label.to(device).float()
+            logit = model(img).float()
+            pred = (logit + 1)/2 * resolution
+            valid_loss = loss(pred, label)
+            valid_losses.append(valid_loss)
+            count += 0          
         
         avg_train_loss = sum(train_losses) / len(train_losses)
-        #avg_valid_loss = sum(valid_losses) / len(valid_losses)
+        avg_valid_loss = sum(valid_losses) / len(valid_losses)
 
         if valid_logger is None or train_logger is None:
             train_logger.add_scalar('avg_loss', avg_train_loss, epoch)
             #valid_logger.add_scalar('avg_loss', avg_valid_loss, epoch)
 
-        print('epoch %-3d \t train = %0.3f \t valid = %0.3f \t' % (epoch, avg_train_loss, avg_train_loss))
+        print('epoch %-3d \t train = %0.3f \t valid = %0.3f \t' % (epoch, avg_train_loss, avg_valid_loss))
         
         pickle.dump(global_step, open('global_step.p', 'wb'))
         save_model(model, suffix=str(epoch))
