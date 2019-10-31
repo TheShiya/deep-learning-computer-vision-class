@@ -47,6 +47,8 @@ def train(args):
             img, label = img.to(device).float(), label.to(device).float()
             logit = model(img).float()
 
+            x_label, y_label = label[:,0], label[:,1]
+            x_logit, y_logit = logit[:,0], logit[:,1]
             loss_val = loss(x_logit, x_label) + 0.5*loss(y_logit, y_label)
             train_losses.append(loss_val)
 
