@@ -30,8 +30,8 @@ class Planner(torch.nn.Module):
 		
 		self.batch_norm = torch.nn.BatchNorm2d(3)
 		self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-		self.resolution = torch.FloatTensor([128, 96]).to(device)
-		
+		self.resolution = torch.FloatTensor([128, 96]).to(self.device)
+
 		c = 3
 		self.use_skip = use_skip
 		self.n_conv = len(layers)
@@ -45,6 +45,7 @@ class Planner(torch.nn.Module):
 			if self.use_skip:
 				c += skip_layer_size[i]
 		self.classifier = torch.nn.Conv2d(c, n_output_channels, 1)
+		self.avg_pool = torch.nn.AvgPool2d(3, stride=1, padding=1)
 
 	def forward(self, x):
 		z = self.batch_norm(x)
@@ -63,6 +64,7 @@ class Planner(torch.nn.Module):
 				z = torch.cat([z, up_activation[i]], dim=1)
 
 		heatmap = self.classifier(z)
+		heatmap = self.avg_pool(heatmap)
 		heatmap = torch.squeeze(heatmap, dim=1)
 		aim = spatial_argmax(heatmap)
 		aim = (aim + 1)/2 * self.resolution
