@@ -36,7 +36,8 @@ def train(args):
     train_data = load_data('drive_data/', transform=transform)
     valid_data = load_data('drive_data/', transform=dense_transforms.ToTensor())
 
-    x_center = torch.FloatTensor([128//2]).to(device)
+    batch_size = 128
+    x_center = torch.FloatTensor([128//2]*batch_size).to(device)
 
     model = model.to(device)
     for epoch in range(args.num_epoch):
