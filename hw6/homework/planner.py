@@ -3,7 +3,6 @@ from .utils import spatial_argmax
 import torch.nn.functional as F
 
 
-
 class Planner(torch.nn.Module):
 	class Block(torch.nn.Module):
 		def __init__(self, n_input, n_output, kernel_size=3, stride=2):
@@ -13,7 +12,7 @@ class Planner(torch.nn.Module):
 			self.c2 = torch.nn.Conv2d(n_output, n_output, kernel_size=kernel_size, padding=kernel_size // 2)
 			self.c3 = torch.nn.Conv2d(n_output, n_output, kernel_size=kernel_size, padding=kernel_size // 2)
 			self.skip = torch.nn.Conv2d(n_input, n_output, kernel_size=1, stride=stride)
-
+            
 		def forward(self, x):
 			return F.relu(self.c3(F.relu(self.c2(F.relu(self.c1(x)))))) + self.skip(x)
 	class UpBlock(torch.nn.Module):
