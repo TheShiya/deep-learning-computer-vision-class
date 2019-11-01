@@ -29,7 +29,7 @@ def train(args):
     loss = torch.nn.MSELoss(reduction='mean')
 
     transform = dense_transforms.Compose([
-        dense_transforms.ColorJitter(0.9, 0.5, 0.9, 0.1),
+        dense_transforms.ColorJitter(0.7, 0.7, 0.7, 0.2),
         dense_transforms.RandomHorizontalFlip(),
         dense_transforms.ToTensor(),
         ])    
@@ -62,16 +62,16 @@ def train(args):
             loss_val.backward()
             optimizer.step()
             global_step += 1
-            break
+
         model.eval()
         valid_losses = []
         count = 0
-        for img, label in valid_data:
-            img, label = img.to(device).float(), label.to(device).float()
-            logit = model(img).float()
-            valid_loss = loss(logit, label)
-            valid_losses.append(valid_loss)
-            count += 0
+        # for img, label in valid_data:
+        #     img, label = img.to(device).float(), label.to(device).float()
+        #     logit = model(img).float()
+        #     valid_loss = loss(logit, label)
+        #     valid_losses.append(valid_loss)
+        #     count += 0
         
         avg_train_loss = sum(train_losses) / len(train_losses)
         avg_valid_loss = sum(valid_losses) / len(valid_losses)
@@ -80,7 +80,7 @@ def train(args):
             train_logger.add_scalar('avg_loss', avg_train_loss, epoch)
             #valid_logger.add_scalar('avg_loss', avg_valid_loss, epoch)
 
-        print('epoch %-3d \t train = %0.3f \t valid =' % (epoch, avg_train_loss, avg_valid_loss))
+        print('epoch %-3d \t train = %0.3f \t valid =' % (epoch, avg_train_loss, 0))
         
         pickle.dump(global_step, open('global_step.p', 'wb'))
         save_model(model, suffix=str(epoch))
