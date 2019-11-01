@@ -33,8 +33,8 @@ def train(args):
         dense_transforms.RandomHorizontalFlip(),
         dense_transforms.ToTensor(),
         ])    
-    train_data = load_data('drive_data', transform=transform)
-    valid_data = load_data('drive_data', transform=dense_transforms.ToTensor())
+    train_data = load_data('drive_data/train', transform=transform)
+    valid_data = load_data('drive_data/valid', transform=dense_transforms.ToTensor())
 
     batch_size = 128
     x_center = torch.FloatTensor([128//2]*batch_size).to(device)
@@ -62,7 +62,7 @@ def train(args):
             loss_val.backward()
             optimizer.step()
             global_step += 1
-
+            break
         model.eval()
         valid_losses = []
         count = 0
