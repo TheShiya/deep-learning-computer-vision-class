@@ -74,7 +74,7 @@ def train(args):
         #     count += 0
         
         avg_train_loss = sum(train_losses) / len(train_losses)
-        avg_valid_loss = sum(valid_losses) / len(valid_losses)
+        #avg_valid_loss = sum(valid_losses) / len(valid_losses)
 
         if valid_logger is None or train_logger is None:
             train_logger.add_scalar('avg_loss', avg_train_loss, epoch)
