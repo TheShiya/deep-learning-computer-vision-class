@@ -46,10 +46,9 @@ def train(args):
         for img, label in train_data:
             img, label = img.to(device).float(), label.to(device).float()
             logit = model(img).float()
-            x_label, y_label = label[:,0], label[:,1]
-            x_logit, y_logit = logit[:,0], logit[:,1]
-
-            loss_val = loss(x_label, x_logit)
+            # x_label, y_label = label[:,0], label[:,1]
+            # x_logit, y_logit = logit[:,0], logit[:,1]
+            loss_val = loss(logit, label).pow(1.5)
             train_losses.append(loss_val)
 
             if epoch > 0 and train_logger is not None:
@@ -80,7 +79,7 @@ def train(args):
             train_logger.add_scalar('avg_loss', avg_train_loss, epoch)
             #valid_logger.add_scalar('avg_loss', avg_valid_loss, epoch)
 
-        print('epoch %-3d \t train = %0.3f \t valid =' % (epoch, avg_train_loss, 0))
+        print('epoch %-3d \t train = %0.3f \t valid =' % (epoch, avg_train_loss))
         
         pickle.dump(global_step, open('global_step.p', 'wb'))
         save_model(model, suffix=str(epoch))
