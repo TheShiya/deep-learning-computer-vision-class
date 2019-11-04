@@ -29,15 +29,13 @@ def train(args):
     loss = torch.nn.MSELoss(reduction='mean')
 
     transform = dense_transforms.Compose([
-        dense_transforms.ColorJitter(0.9, 0.5, 0.9, 0.1),
+        dense_transforms.ColorJitter(0.9, 0.9, 0.9, 0.5),
         dense_transforms.RandomHorizontalFlip(),
         dense_transforms.ToTensor(),
-        ])    
-    train_data = load_data('drive_data', transform=transform)
-    valid_data = load_data('drive_data', transform=dense_transforms.ToTensor())
-
+        ])
     batch_size = 128
-    x_center = torch.FloatTensor([128//2]*batch_size).to(device)
+    train_data = load_data('drive_data_original', batch_size=batch_size, transform=transform)
+    #valid_data = load_data('drive_data', batch_size=batch_size, transform=dense_transforms.ToTensor())
 
     model = model.to(device)
     for epoch in range(args.num_epoch):
@@ -46,9 +44,10 @@ def train(args):
         for img, label in train_data:
             img, label = img.to(device).float(), label.to(device).float()
             logit = model(img).float()
-            x_label, y_label = label[:,0], label[:,1]
-            x_logit, y_logit = logit[:,0], logit[:,1]
-            loss_val = loss(logit, label)# - x_logit/x_label * # + 0.1*loss(x_logit, x_label)
+            #x_label, y_label = label[:,0], label[:,1]
+            #x_logit, y_logit = logit[:,0], logit[:,1]
+            #loss_val = loss(logit, label)# - x_logit/x_label * # + 0.1*loss(x_logit, x_label)
+            loss_val = (label - logit).norm(dim=1).pow(2).mean()
             train_losses.append(loss_val)
 
             if epoch > 0 and train_logger is not None:
@@ -65,21 +64,21 @@ def train(args):
         model.eval()
         valid_losses = []
         count = 0
-        for img, label in valid_data:
-            img, label = img.to(device).float(), label.to(device).float()
-            logit = model(img).float()
-            valid_loss = loss(logit, label)
-            valid_losses.append(valid_loss)
-            count += 0
+        # for img, label in valid_data:
+        #     img, label = img.to(device).float(), label.to(device).float()
+        #     logit = model(img).float()
+        #     valid_loss = loss(logit, label)
+        #     valid_losses.append(valid_loss)
+        #     count += 0
         
         avg_train_loss = sum(train_losses) / len(train_losses)
-        avg_valid_loss = sum(valid_losses) / len(valid_losses)
+        #avg_valid_loss = sum(valid_losses) / len(valid_losses)
 
         if valid_logger is None or train_logger is None:
             train_logger.add_scalar('avg_loss', avg_train_loss, epoch)
             #valid_logger.add_scalar('avg_loss', avg_valid_loss, epoch)
 
-        print('epoch %-3d \t train = %0.3f \t valid =' % (epoch, avg_train_loss, avg_valid_loss))
+        print('epoch %-3d \t avg distance = %0.3f \t' % (epoch, avg_train_loss**(1/2)))
         
         pickle.dump(global_step, open('global_step.p', 'wb'))
         save_model(model, suffix=str(epoch))
