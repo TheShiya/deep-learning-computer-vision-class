@@ -38,6 +38,7 @@ def train(args):
     #valid_data = load_data('drive_data', batch_size=batch_size, transform=dense_transforms.ToTensor())
 
     model = model.to(device)
+    power = 2
     for epoch in range(args.num_epoch):
         model.train()
         train_losses = []        
@@ -47,14 +48,15 @@ def train(args):
             #x_label, y_label = label[:,0], label[:,1]
             #x_logit, y_logit = logit[:,0], logit[:,1]
             #loss_val = loss(logit, label)# - x_logit/x_label * # + 0.1*loss(x_logit, x_label)
-            loss_val = (label - logit).norm(dim=1).pow(2).mean()
+            loss_val = (label - logit).norm(dim=1).pow(power).mean()
+            max_loss = (label - logit).norm(dim=1).pow(power).max()
             train_losses.append(loss_val)
 
             if epoch > 0 and train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
 
             if global_step % 10 == 0:
-                print('{}: loss: {}'.format(global_step, loss_val))
+                print('{}: loss: {}'.format(global_step, loss_val**(1/power)))
 
             optimizer.zero_grad()
             loss_val.backward()
@@ -78,7 +80,7 @@ def train(args):
             train_logger.add_scalar('avg_loss', avg_train_loss, epoch)
             #valid_logger.add_scalar('avg_loss', avg_valid_loss, epoch)
 
-        print('epoch %-3d \t avg distance = %0.3f \t' % (epoch, avg_train_loss**(1/2)))
+        print('epoch %-3d \t avg distance = %0.3f \t' % (epoch, avg_train_loss**(1/power)))
         
         pickle.dump(global_step, open('global_step.p', 'wb'))
         save_model(model, suffix=str(epoch))
