@@ -34,7 +34,7 @@ def train(args):
         dense_transforms.ToTensor(),
         ])
     batch_size = 128
-    train_data = load_data('drive_data_original', batch_size=batch_size, transform=transform)
+    train_data = load_data('drive_data', batch_size=batch_size, transform=transform)
     #valid_data = load_data('drive_data', batch_size=batch_size, transform=dense_transforms.ToTensor())
 
     model = model.to(device)
