@@ -49,23 +49,20 @@ def train(args):
             #x_logit, y_logit = logit[:,0], logit[:,1]
             #loss_val = loss(logit, label)# - x_logit/x_label * # + 0.1*loss(x_logit, x_label)
             loss_val = (label - logit).norm(dim=1).pow(power).mean()
-            max_loss = (label - logit).norm(dim=1).pow(power).max()
+            loss_std = (label - logit).norm(dim=1).pow(power).std()
             train_losses.append(loss_val)
 
             if epoch > 0 and train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
 
-            if global_step % 4 != 0:
-            	optimizer.zero_grad()
-            	loss_val.backward()
-            	optimizer.step()
+        	optimizer.zero_grad()
+        	loss_val.backward()
+        	optimizer.step()
             	
             if global_step % 10 == 0:
-                print('train {}: loss: {:.2f}, max loss: {:.2f}'.format(global_step,
-                    loss_val**(1/power), max_loss**(1/power)))
-                if global_step % 4 == 0:
-                	print('valid {}: val_loss: {:.2f}, max loss: {:.2f}'.format(global_step,
-                    loss_val**(1/power), max_loss**(1/power)))
+                print('train {}: loss: {:.2f}, std: {:.2f}'.format(global_step,
+                    loss_val**(1/power), loss_std))
+
             global_step += 1
 
         model.eval()
