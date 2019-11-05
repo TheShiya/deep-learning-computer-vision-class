@@ -33,7 +33,7 @@ def train(args):
         dense_transforms.RandomHorizontalFlip(),
         dense_transforms.ToTensor(),
         ])
-    batch_size = 128
+    batch_size = 50
     train_data = load_data('drive_data', batch_size=batch_size, transform=transform)
     #valid_data = load_data('drive_data', batch_size=batch_size, transform=dense_transforms.ToTensor())
 
@@ -55,13 +55,15 @@ def train(args):
             if epoch > 0 and train_logger is not None:
                 train_logger.add_scalar('loss', loss_val, global_step)
 
-            if global_step % 10 == 0:
-                print('{}: loss: {:.2f}, max loss: {:.2f}'.format(global_step,
+            if global_step % 4 != 0:
+            	optimizer.zero_grad()
+            	loss_val.backward()
+            	optimizer.step()
+            	print('valid {}: val_loss: {:.2f}, max loss: {:.2f}'.format(global_step,
                     loss_val**(1/power), max_loss**(1/power)))
-
-            optimizer.zero_grad()
-            loss_val.backward()
-            optimizer.step()
+            elif global_step % 10 == 0:
+                print('train {}: loss: {:.2f}, max loss: {:.2f}'.format(global_step,
+                    loss_val**(1/power), max_loss**(1/power)))
             global_step += 1
 
         model.eval()
