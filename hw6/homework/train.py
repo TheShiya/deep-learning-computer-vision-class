@@ -57,7 +57,7 @@ def train(args):
 
             if global_step % 10 == 0:
                 print('{}: loss: {}, max loss: {}'.format(global_step,
-                    round(loss_val**(1/power), 2), round(max_loss**(1/power), 2))
+                    round(loss_val**(1/power), 2), round(max_loss**(1/power), 2)))
 
             optimizer.zero_grad()
             loss_val.backward()
