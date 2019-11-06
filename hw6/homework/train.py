@@ -49,7 +49,7 @@ def train(args):
 			#x_logit, y_logit = logit[:,0], logit[:,1]
 			#loss_val = loss(logit, label)# - x_logit/x_label * # + 0.1*loss(x_logit, x_label)
 			loss_val = (label - logit).norm(dim=1).pow(power).mean()
-			loss_std = (label - logit).norm(dim=1).pow(power).std()
+			loss_std = (label - logit).norm(dim=1).std()
 			train_losses.append(loss_val)
 
 			if epoch > 0 and train_logger is not None:
